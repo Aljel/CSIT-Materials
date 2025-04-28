@@ -1,0 +1,43 @@
+\documentclass{article}
+\usepackage[T2A]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage{amsthm}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{amsfonts}
+\usepackage{mathrsfs}
+\usepackage[12pt]{extsizes}
+\usepackage{fancyvrb}
+\usepackage{indentfirst}
+\usepackage[
+  left=2cm, right=2cm, top=2cm, bottom=2cm, headsep=0.2cm, footskip=0.6cm, bindingoffset=0cm
+]{geometry}
+\usepackage[english,russian]{babel}
+
+
+\begin{document}
+\section*{Вариант 29}
+Введем функцию
+
+\begin{equation}
+  \Phi(s^*(i), l) = (s_i^*(i) - s_i^{\circ} - 1)^2 + (s_i^*(i) - s_i^{\circ} + 1)^2 + \sum_{j \in \Omega_i \\ j \neq l} (s_j^*(i) - s_j^{\circ})^2, \quad i \in I, \; l \in \Omega_i,
+\end{equation}
+которую назовем функцией выбора. Тогда положим 
+
+\begin{equation}
+  \theta_{ij}(s^*(i)) = 
+\begin{cases}
+1, & \text{если } j = \arg\min\limits_{t \in \Omega_i} \Phi(s^*(i), t); \\
+0, & \text{в противном случае.}
+\end{cases}
+\end{equation}
+При таком способе формирования вероятностей перехода требований обеспечивается переход
+сети за счет перехода требования из системы $S_i$ в систему $S_j$ из локального состояния $s^*(i)$
+в смежное локальное состояние, имеющее наибольший суммарный потенциал, определяемый
+выражением
+
+\begin{equation*}
+  V(X(s^*(i),j)) = \sum_{s \in X(s^*(i),j)} V(s).
+\end{equation*}
+\end{document}
+
