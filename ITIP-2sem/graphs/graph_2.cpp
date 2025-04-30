@@ -65,6 +65,13 @@ int main(){
     std::cout << "Enter the points\n";
     std::cin >> point1 >> point2;
 
+    for (int i = 0; i < Gr[point1].size(); i++){
+        if (Gr[point1][i] == point2){
+            std::cout << "These points are already connected!\n";
+            return 0;
+        }
+    }
+
     Gr[point1].insert(std::lower_bound(Gr[point1].begin(), Gr[point1].end(), point2), point2);
     Gr[point2].insert(std::lower_bound(Gr[point2].begin(), Gr[point2].end(), point1), point1);
 

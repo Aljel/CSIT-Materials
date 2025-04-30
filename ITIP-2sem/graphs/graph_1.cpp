@@ -63,8 +63,8 @@ int main(){
     int point;
     std::cout << "Enter the point\n";
     std::cin >> point;
-
-    std::cout << "The number of connections of this point is " << Gr[point].size();
+    
+    std::cout << "The number of connections of this point is " << Gr[point].size() << "\n";
 
     return 0;
 }
