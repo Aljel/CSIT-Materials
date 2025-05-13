@@ -3,6 +3,7 @@
 #include <iomanip>
 #include <string>
 #include <vector>
+#include <cmath> 
 
 bool people::operator==(const people& other) const {
     return surname == other.surname &&
@@ -152,15 +153,15 @@ void printListOfPeople(list *h) {
         printPeople(p->inf);
         p = p->next; // переход к следующему элементу
     }
-    out << "\n \n \n";
 }
 
-// печать хэш-таблицы
-void printHashTable(std::vector<list*> T){
+// печать открытой хэш-таблицы
+void printOpenHashTable(std::vector<list*> T){
     for (size_t i = 0; i < T.size(); ++i) {
         out << "Bucket " << i << ":\n";
         printListOfPeople(T[i]);
     }
+    out << "\n \n \n";
 }
 
 // создание открытой хэш-таблицы через метод деления по зарплате 
@@ -197,6 +198,7 @@ void deleteOpenHashTable(std::vector<list*>& T, people P){
     }
 }
 
+// вставка в открытыю хэш-таблицу
 void insertOpenHashTable(std::vector<list*>& T, people P){
     int k = P.salary % T.size();
     list *newNode = new list{P, nullptr, nullptr};
@@ -218,5 +220,73 @@ people searchOpenHashTable(std::vector<list*> T, int salary){
             return current->inf;
         current = current->next;
     }
-    out << "\nCould not find a guy you are looking for!\n";
+    out << "Could not find a guy you are looking for!\n";
+    people P;
+    P.surname = "mistake";
+    return P;
+}
+
+// печать закрытой хэш-таблицы
+void printClosedHashTable(std::vector<people> T){
+    for (size_t i = 0; i < T.size(); ++i) {
+        out << "Cell " << i << ": ";
+        printPeople(T[i]);
+    }
+    out << "\n \n \n";
+}
+
+// вспомогательная хэш-функция для закрытой хэш-таблицы
+int hashClosedHelpFunction(int M, int salary){
+    double A = 0.61803;
+    int h1 = floor(M * fmod(salary * A, 1.0));
+    return h1;
+}
+
+// основная хэш-функция для закрытой хэш-таблицы
+int hashClosedFunction(int M, int salary, int c1, int c2, int i){
+    int h1 = hashClosedHelpFunction(M, salary);
+    return ((h1 + c1 * i + c2 * i * i) % M);
+}
+
+// создание закрытой хэш-таблицы
+std::vector<people> createClosedHashTable(std::vector<people> A, int M, int c1, int c2){
+    std::vector<people> T(M);
+    for (int i = 0; i < A.size(); i++){
+        int j = 0;
+        for (int l = 0; l < M; l++){
+            int p = hashClosedFunction(M, A[i].salary, c1, c2, j);
+            if (T[p].surname.empty()){
+                T[p] = A[i];
+                break;
+            }
+            else 
+                j += 1;
+        }
+    }
+    return T;
+}
+
+// поиск в закрытой хэш-таблице
+people searchClosedHashTable(std::vector<people> T, int salary, int M, int c1, int c2){
+    people P;
+    P.surname = "mistake";
+    for (int i = 0; i < M; i++){
+        if (T[hashClosedFunction(M, salary, c1, c2, i)].surname.empty())
+            return P;
+        if (T[hashClosedFunction(M, salary, c1, c2, i)].salary == salary)
+            return T[hashClosedFunction(M, salary, c1, c2, i)];
+    }
+    return P;
+}
+
+// вставка в закрытую хэш-таблицу
+void insertClosedHashTable(std::vector<people>& T, people P, int M, int c1, int c2){
+    for (int i = 0; i < M; i++){
+        int p = hashClosedFunction(M, T[i].salary, c1, c2, i);
+        if (T[p].surname.empty()){
+                T[p] = P;
+                return;
+            }
+    }
+    out << "Table is filled, unable to insert\n";
 }

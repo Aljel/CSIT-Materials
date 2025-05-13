@@ -22,31 +22,27 @@ people peopleMaker(){
 }
 
 int main() {
-    std::cout << "Enter the size of the table\n";
-    int M;
-    std::cin >> M;
+    std::cout << "Enter the size of the table and c_1, c_2 for hash function\n";
+    int M, c1, c2;
+    std::cin >> M >> c1 >> c2;
 
     std::vector<people> A = makePeopleVec();
 
-    std::vector<list*> T = createOpenHashTable(A, M);
-    printOpenHashTable(T);
-
-    std::cout<< "Enter people type guy to test deletion\n";
-    people delguy = peopleMaker();
-    deleteOpenHashTable(T, delguy);
+    std::vector<people> T = createClosedHashTable(A, M, c1, c2);
+    printClosedHashTable(T);
 
     std::cout<< "Enter people type guy to test insertion\n";
     people insertguy = peopleMaker();
-    insertOpenHashTable(T, insertguy);
+    insertClosedHashTable(T, insertguy, M, c1, c2);
 
     std::cout<< "Enter guy salary to test search\n";
     int salary;
     std::cin >> salary;
-    people P = searchOpenHashTable(T, salary);
+    people P = searchClosedHashTable(T, salary, M, c1, c2);
     if (P.surname != "mistake")
         printPeople(P);
 
-    printOpenHashTable(T);
+    printClosedHashTable(T);
 
     return 0;
 }
