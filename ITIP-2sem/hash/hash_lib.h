@@ -23,16 +23,16 @@ struct list {
         list *prev;
 };      
 
-
 bool operator==(people a, people b);
 date strToDate(std::string str);
 void push(list *&h, list *&t, people x);
 list *find(list *h, list *t, people x);
-void insert_after(list *&h, list *&t, list *r, people y);
+void listInsertAfter(list *&h, list *&t, list *r, people y);
 void del_node(list *&h, list *&t, list *r);
-void printListOfPeople(list *h, list *t);
 std::vector<people> makePeopleVec();
 void printPeople(people x);
-void printListOfPeople(list *h, list *t);
+void printListOfPeople(list *h);
+void listInsert(list*& head, list*& tail,people person);
+void printHashTable(std::vector<list*> T);
 
 #endif

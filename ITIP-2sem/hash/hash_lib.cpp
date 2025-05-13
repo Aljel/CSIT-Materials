@@ -54,7 +54,7 @@ list *find(list *h, list *t, people x) { // поиск элементов спи
 }
 
 // вставка элемента после другого
-void insert_after(list *&h, list *&t, list *r, people y) { // вставляем после r
+void listInsertAfter(list *&h, list *&t, list *r, people y) { // вставляем после r
     list *p = new list; // создаем новый элемент
     p->inf = y;
     if (r == t) {       // если вставляем после хвоста
@@ -70,6 +70,17 @@ void insert_after(list *&h, list *&t, list *r, people y) { // вставляем
     }
 }
 
+// добавление элемента в начало списка
+void listInsert(list*& head, list*& tail,people person) {
+    list *newNode = new list{person, nullptr, nullptr};
+    if (!head) {
+        head = tail = newNode;
+    } else {
+        newNode->next = head;
+        head->prev = newNode;
+        head = newNode;
+    }
+}
 // удаление элемента списка
 void del_node(list *&h, list *&t, list *r) { // удаляем после r
     if (r == h && r == t)                    // единственный элемент списка
@@ -133,11 +144,18 @@ void printPeople(people x) {
 }
 
 // печать элементов списка
-void printListOfPeople(list *h, list *t) {
+void printListOfPeople(list *h) {
     list *p = h; // укзатель на голову
     while (p) {  // пока не дошли до конца списка
-        out << "\n" << "\t";
+        out << "\t";
         printPeople(p->inf);
         p = p->next; // переход к следующему элементу
+    }
+}
+
+void printHashTable(std::vector<list*> T){
+    for (size_t i = 0; i < T.size(); ++i) {
+        out << "Bucket " << i << ":\n";
+        printListOfPeople(T[i]);
     }
 }
