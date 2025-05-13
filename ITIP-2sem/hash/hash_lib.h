@@ -15,6 +15,8 @@ struct people {
         date dateOfBirth;
         int timeOfWork;
         int salary;
+
+        bool operator==(const people& other) const;
 };
 
 struct list {
@@ -23,7 +25,6 @@ struct list {
         list *prev;
 };      
 
-bool operator==(people a, people b);
 date strToDate(std::string str);
 void push(list *&h, list *&t, people x);
 list *find(list *h, list *t, people x);
@@ -34,5 +35,9 @@ void printPeople(people x);
 void printListOfPeople(list *h);
 void listInsert(list*& head, list*& tail,people person);
 void printHashTable(std::vector<list*> T);
+std::vector<list*> createOpenHashTable(std::vector<people> A, int M);
+void deleteOpenHashTable(std::vector<list*>& T, people P);
+void insertOpenHashTable(std::vector<list*>& T, people P);
+people searchOpenHashTable(std::vector<list*> T, int salary);
 
 #endif

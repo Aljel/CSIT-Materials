@@ -4,12 +4,14 @@
 #include <string>
 #include <vector>
 
-bool operator==(people a, people b) {
-    return a.surname == b.surname && a.work == b.work &&
-           a.timeOfWork == b.timeOfWork && a.salary == b.salary &&
-           a.dateOfBirth.dd == b.dateOfBirth.dd &&
-           a.dateOfBirth.mm == b.dateOfBirth.mm &&
-           a.dateOfBirth.yy == b.dateOfBirth.yy;
+bool people::operator==(const people& other) const {
+    return surname == other.surname &&
+           work == other.work &&
+           dateOfBirth.dd == other.dateOfBirth.dd &&
+           dateOfBirth.mm == other.dateOfBirth.mm &&
+           dateOfBirth.yy == other.dateOfBirth.yy &&
+           timeOfWork == other.timeOfWork &&
+           salary == other.salary;
 }
 
 
@@ -71,7 +73,7 @@ void listInsertAfter(list *&h, list *&t, list *r, people y) { // вставля�
 }
 
 // добавление элемента в начало списка
-void listInsert(list*& head, list*& tail,people person) {
+void listInsert(list*& head, list*& tail, people person) {
     list *newNode = new list{person, nullptr, nullptr};
     if (!head) {
         head = tail = newNode;
@@ -99,7 +101,6 @@ void del_node(list *&h, list *&t, list *r) { // удаляем после r
     }
     delete r; // удаляем r
 }
-
 
 std::ifstream in("input.txt");
 std::ofstream out("output.txt");
@@ -151,11 +152,71 @@ void printListOfPeople(list *h) {
         printPeople(p->inf);
         p = p->next; // переход к следующему элементу
     }
+    out << "\n \n \n";
 }
 
+// печать хэш-таблицы
 void printHashTable(std::vector<list*> T){
     for (size_t i = 0; i < T.size(); ++i) {
         out << "Bucket " << i << ":\n";
         printListOfPeople(T[i]);
     }
+}
+
+// создание открытой хэш-таблицы через метод деления по зарплате 
+std::vector<list*> createOpenHashTable(std::vector<people> A, int M){
+    std::vector<list*> T(M, NULL);
+    std::vector<list*> tails(M, nullptr); // Для хранения хвостов списков
+
+    for (int i = 0; i < A.size(); i++){
+        int k = A[i].salary % M;
+        listInsert(T[k], tails[k], A[i]);
+    }
+
+    return T;
+}
+
+// удаляет элемент из хэш-таблицы
+void deleteOpenHashTable(std::vector<list*>& T, people P){
+    int k = P.salary % T.size();
+    list* current = T[k];
+    while (current){
+        if (current->inf == P){
+            if (current->prev)
+                current->prev->next = current->next;
+            else
+                T[k] = current->next;
+            if (current->next)
+                current->next->prev = current->prev;
+            list* deletingNode = current;
+            current = current->next;
+            delete deletingNode;
+        }
+        else
+            current = current->next;
+    }
+}
+
+void insertOpenHashTable(std::vector<list*>& T, people P){
+    int k = P.salary % T.size();
+    list *newNode = new list{P, nullptr, nullptr};
+    if (T[k]->next){
+        newNode->next = T[k];
+        T[k]->prev = newNode;
+        T[k] = newNode;
+    }
+    else
+        T[k] = newNode;
+}
+
+// возвращает человека по его зарплате 
+people searchOpenHashTable(std::vector<list*> T, int salary){
+    int k = salary % T.size();
+    list* current = T[k];
+    while (current){
+        if (current->inf.salary == salary)
+            return current->inf;
+        current = current->next;
+    }
+    out << "\nCould not find a guy you are looking for!\n";
 }
