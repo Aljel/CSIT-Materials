@@ -1,7 +1,6 @@
 #ifndef HASH_LIB_H
 #define HASH_LIB_H
 
-#include <fstream>
 #include <iomanip>
 #include <string>
 #include <vector>
@@ -24,14 +23,16 @@ struct list {
         list *prev;
 };      
 
+
 bool operator==(people a, people b);
-std::vector<people> makePeopleVec();
-void printPeople(people x);
+date strToDate(std::string str);
 void push(list *&h, list *&t, people x);
 list *find(list *h, list *t, people x);
 void insert_after(list *&h, list *&t, list *r, people y);
 void del_node(list *&h, list *&t, list *r);
 void printListOfPeople(list *h, list *t);
-
+std::vector<people> makePeopleVec();
+void printPeople(people x);
+void printListOfPeople(list *h, list *t);
 
 #endif

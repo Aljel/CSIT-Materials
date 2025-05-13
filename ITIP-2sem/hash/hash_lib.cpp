@@ -4,9 +4,6 @@
 #include <string>
 #include <vector>
 
-std::ifstream in("input.txt");
-std::ofstream out("output.txt");
-
 bool operator==(people a, people b) {
     return a.surname == b.surname && a.work == b.work &&
            a.timeOfWork == b.timeOfWork && a.salary == b.salary &&
@@ -14,6 +11,7 @@ bool operator==(people a, people b) {
            a.dateOfBirth.mm == b.dateOfBirth.mm &&
            a.dateOfBirth.yy == b.dateOfBirth.yy;
 }
+
 
 // перевод строки в дату
 date strToDate(std::string str) { // из строки в дату
@@ -27,44 +25,6 @@ date strToDate(std::string str) { // из строки в дату
     return a;
 }
 
-// создание списка людей из файла input.txt
-std::vector<people> makePeopleVec() { // ввод из файла
-    std::vector<people> x;
-    people temp;
-    while (in.peek() != EOF) { // считываем по пробелам
-        in >> temp.surname;    // фамилия
-        in >> temp.work;       // место работы
-
-        std::string tmp; // дата рождения
-        in >> tmp;
-        temp.dateOfBirth = strToDate(tmp);
-
-        in >> temp.timeOfWork; // стаж работы
-        in >> temp.salary;     // зарплата
-
-        x.push_back(temp);
-    }
-    return x;
-}
-
-// вывод структуры people
-void printPeople(people x) {
-    out << std::setw(11) << std::left << x.surname; // фамилия
-    out << std::setw(10) << std::left << x.work;    // работа
-
-    if (x.dateOfBirth.dd < 10)
-        out << '0' << x.dateOfBirth.dd << '.'; // добавляем 0
-    else
-        out << x.dateOfBirth.dd << '.';
-    if (x.dateOfBirth.mm < 10)
-        out << '0' << x.dateOfBirth.mm << '.';
-    else
-        out << x.dateOfBirth.mm << '.';
-    out << x.dateOfBirth.yy << "  ";
-
-    out << std::setw(4) << std::left << x.timeOfWork;      // стаж работы
-    out << std::setw(10) << std::left << x.salary << "\n"; // запрлата
-}
 
 // вставка элемента в конец списка
 void push(list *&h, list *&t, people x) {
@@ -129,10 +89,54 @@ void del_node(list *&h, list *&t, list *r) { // удаляем после r
     delete r; // удаляем r
 }
 
+
+std::ifstream in("input.txt");
+std::ofstream out("output.txt");
+
+// создание списка людей из файла input.txt
+std::vector<people> makePeopleVec() { // ввод из файла
+    std::vector<people> x;
+    people temp;
+    while (in.peek() != EOF) { // считываем по пробелам
+        in >> temp.surname;    // фамилия
+        in >> temp.work;       // место работы
+
+        std::string tmp; // дата рождения
+        in >> tmp;
+        temp.dateOfBirth = strToDate(tmp);
+
+        in >> temp.timeOfWork; // стаж работы
+        in >> temp.salary;     // зарплата
+
+        x.push_back(temp);
+    }
+    return x;
+}
+
+// вывод структуры people
+void printPeople(people x) {
+    out << std::setw(11) << std::left << x.surname; // фамилия
+    out << std::setw(10) << std::left << x.work;    // работа
+
+    if (x.dateOfBirth.dd < 10)
+        out << '0' << x.dateOfBirth.dd << '.'; // добавляем 0
+    else
+        out << x.dateOfBirth.dd << '.';
+    if (x.dateOfBirth.mm < 10)
+        out << '0' << x.dateOfBirth.mm << '.';
+    else
+        out << x.dateOfBirth.mm << '.';
+    out << x.dateOfBirth.yy << "  ";
+
+    out << std::setw(4) << std::left << x.timeOfWork;      // стаж работы
+    out << std::setw(10) << std::left << x.salary << "\n"; // запрлата
+}
+
 // печать элементов списка
 void printListOfPeople(list *h, list *t) {
     list *p = h; // укзатель на голову
     while (p) {  // пока не дошли до конца списка
+        out << "\n" << "\t";
         printPeople(p->inf);
         p = p->next; // переход к следующему элементу
     }
