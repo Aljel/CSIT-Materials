@@ -3,3 +3,8 @@
 !*.*
 .vscode/
 *.exe
+*.obj
+*.EXE
+*.COM
+*.OBJ
+*.pdf
