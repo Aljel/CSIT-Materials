@@ -1,12 +1,10 @@
 #include "raylib.h"
-
 #define RAYGUI_IMPLEMENTATION
 #include "raygui.h"
 #undef RAYGUI_IMPLEMENTATION
 
 #include "train_simulation.hpp"
 #include "config.hpp"
-#include "resources.h"
 #include <iostream>
 #include <algorithm>
 #include <string>
@@ -15,9 +13,8 @@
 
 
 RailwayNetwork network;
-bool isRunning = false, showSchedule = false, showStatistics = false;
-int selectedRouteForSchedule = 0, lastEventCount = 0;
-float simulationSpeed = 1.0;
+bool isRunning = false;
+int lastEventCount = 0;
 
 bool showAddTrainDialog = false;
 int dialogState = 0; 
@@ -27,7 +24,7 @@ int newRouteEnd = 5;
 float newTrainSpeed = 70.0;
 std::vector<int> selectedStops;
 
-Font LoadRussianFontStatic() {
+Font LoadRussianFontStatic(const char *fontPath, int fontSize) {
     int charsCount = 0;
     int* chars = LoadCodepoints(
         "АБВГДЕЁЖЗИЙКЛМНОПРСТУФХЦЧШЩЪЫЬЭЮЯабвгдеёжзийклмнопрстуфхцчшщъыьэюя"
@@ -37,19 +34,11 @@ Font LoadRussianFontStatic() {
         &charsCount
     );
 
-    Font font = LoadFontFromMemory(
-        ".ttf",
-        JetBrainsMonoNerdFont_Regular_ttf,
-        JetBrainsMonoNerdFont_Regular_ttf_len,
-        15,
-        chars,
-        charsCount
-    );
-
+    Font font = LoadFontEx(fontPath, fontSize, chars, charsCount);
     UnloadCodepoints(chars);
     return font;
 }
-
+    
 void initializeNetwork() {
     network.addStation("Москва", 0);
     network.addStation("Tula", 100);
@@ -126,28 +115,27 @@ void printNewEvents() {
     }
 }
 
-void drawRailwayNetwork() {
+void drawRailwayNetwork(Font customFont, Texture2D stationTexture) {
     auto stations = network.getStations();
     auto trains = network.getTrains();
 
-    DrawText("Railway Simulation", 280, 20, 20, DARKGRAY);
-    DrawText(("Time: " + network.getSimulationTime().toString()).c_str(), 280, 50, 16, GRAY);
+    DrawTextEx(customFont, "Симуляция движеняи поездов!", Vector2{280, 20}, 20, 0, DARKGRAY);
+    DrawTextEx(customFont, ("Время: " + network.getSimulationTime().toString()).c_str(), Vector2{280, 50}, 16, 0, GRAY);
 
-    DrawRectangle(280, 100, 1100, 400, Color{240, 240, 240, 255});
+    DrawRectangle(300, 100, 1100, 400, Color{240, 240, 240, 255});
 
     float y = 300;
-    DrawLine(280, y, 1350, y, Color{100, 100, 100, 255});
+    DrawLine(300, y, 1350, y, Color{100, 100, 100, 255});
 
     for (auto station : stations) {
-        float x = 280 + station.positionKm;
-        DrawCircle(x, y, 20, Color{0, 153, 187, 255});
-        DrawText(station.name.c_str(), x - 25, y + 25, 12, DARKGRAY);
+        float x = 300 + station.positionKm*2;
+        DrawTextureEx(stationTexture, {x -50, y - 150}, 0, 0.4, WHITE);
+        DrawTextEx(customFont, station.name.c_str(), Vector2{x, y + 25}, 20, 0, DARKGRAY);
     }
 
     for (auto train : trains) {
-
-        float x = 280 + train.getCurrentPosition();
-        float ty = y + (train.id) * 30 - 30;
+        float x = 300 + train.getCurrentPosition()*2;
+        float ty = y + (train.id) * 30 + 80;
 
         Color col;
         switch (train.getStatus()) {
@@ -167,60 +155,62 @@ void drawRailwayNetwork() {
                 col = Color{255, 221, 0, 255};
         }
 
-        DrawRectangle(x - 12, ty - 7, 25, 15, col);
-        DrawText(("T" + std::to_string(train.id)).c_str(), x - 8, ty - 8, 10, DARKGRAY);
+        DrawRectangle(x - 12, ty - 7, 35, 25, col);
+        DrawTextEx(customFont, ("T" + std::to_string(train.id)).c_str(), Vector2{x - 8, ty - 8}, 15, 0, DARKGRAY);
     }
 }
 
-void drawScheduleWindow() {
-    if (!showSchedule) return;
+void drawScheduleWindow(float& RouteForSchedule) {
+    DrawRectangle(800, 600, 400, 350, Color{245, 245, 245, 255});
+    DrawRectangleLines(800, 600, 400, 350, DARKGRAY);
+    DrawText("Расписание", 810, 610, 30, DARKGRAY);
 
-    DrawRectangle(800, 50, 600, 500, Color{245, 245, 245, 255});
-    DrawRectangleLines(800, 50, 600, 500, DARKGRAY);
-    DrawText("Schedule", 810, 60, 16, DARKGRAY);
-
-    Route* r = network.getRoute(selectedRouteForSchedule);
+    Route* r = network.getRoute(RouteForSchedule);
     if (r) {
-        DrawText(("Route: " + r->name).c_str(), 810, 90, 12, DARKGRAY);
-        float yPos = 120;
+        DrawText(("Route: " + r->name).c_str(), 810, 650, 20, DARKGRAY);
+        float yPos = 680;
         for (auto stop : r->stops) {
             Station* s = network.getStation(stop.stationId);
             if (s) {
                 std::string text = s->name + " " + stop.arrivalTime.toString() + "-" + 
                                    stop.departureTime.toString();
-                DrawText(text.c_str(), 810, yPos, 11, GRAY);
+                DrawText(text.c_str(), 810, yPos, 20, GRAY);
                 yPos += 30;
             }
+        }
+
+        Rectangle routeSlider = {810, yPos, 230, 20};
+        int routeCount = network.getRoutes().size();
+        if (routeCount > 0) {
+            RouteForSchedule = GuiSlider(routeSlider, "0", std::to_string(routeCount - 1).c_str(), &RouteForSchedule, 0, (routeCount - 1));
         }
     }
 }
 
 void drawStatisticsWindow() {
-    if (!showStatistics) return;
-
-    DrawRectangle(800, 50, 600, 500, Color{245, 245, 245, 255});
-    DrawRectangleLines(800, 50, 600, 500, DARKGRAY);
-    DrawText("Statistics", 810, 60, 16, DARKGRAY);
+    DrawRectangle(300, 600, 400, 350, Color{245, 245, 245, 255});
+    DrawRectangleLines(300, 600, 400, 350, DARKGRAY);
+    DrawText("Statistics", 310, 610, 30, DARKGRAY);
 
     auto stats = network.getStatistics();
-    float yPos = 90;
+    float yPos = 660;
 
-    DrawText(("Time: " + network.getSimulationTime().toString()).c_str(), 810, yPos, 12, GRAY);
+    DrawText(("Time: " + network.getSimulationTime().toString()).c_str(), 310, yPos, 20, GRAY);
     yPos += 30;
-    DrawText(("Events: " + std::to_string(stats.totalEvents)).c_str(), 810, yPos, 12, GRAY);
+    DrawText(("Events: " + std::to_string(stats.totalEvents)).c_str(), 310, yPos, 20, GRAY);
     yPos += 30;
-    DrawText(("Delays: " + std::to_string(stats.totalDelays)).c_str(), 810, yPos, 12, ORANGE);
+    DrawText(("Delays: " + std::to_string(stats.totalDelays)).c_str(), 310, yPos, 20, ORANGE);
     yPos += 30;
-    DrawText(("Accidents: " + std::to_string(stats.totalAccidents)).c_str(), 810, yPos, 12, RED);
+    DrawText(("Accidents: " + std::to_string(stats.totalAccidents)).c_str(), 310, yPos, 20, RED);
     yPos += 30;
     DrawText(("Delay time: " + std::to_string(stats.totalDelayMinutes) + " min").c_str(), 
-             810, yPos, 12, GRAY);
+             310, yPos, 20, GRAY);
 }
 
-void drawControlPanel() {
-    DrawRectangle(0, 0, 250, 800, Color{200, 200, 200, 255});
-    DrawRectangleLines(0, 0, 250, 800, DARKGRAY);
-    DrawText("Control", 10, 10, 16, DARKGRAY);
+void drawControlPanel(Font customFont) {
+    DrawRectangle(0, 0, 250, 1000, Color{200, 200, 200, 255});
+    DrawRectangleLines(0, 0, 250, 1000, DARKGRAY);
+    DrawTextEx(customFont, "Управление", Vector2{10, 10}, 16, 0, DARKGRAY);
 
     auto trains = network.getTrains();
     int delayed = 0, accidents = 0, completed = 0;
@@ -365,11 +355,15 @@ void drawAddTrainDialog() {
 }
 
 int main() {
-    InitWindow(1400, 800, "Симулятор движения поездов");
+    InitWindow(1800, 1000, "Симулятор движения поездов");
     SetTargetFPS(60);
 
-    Font guiFont = LoadRussianFontStatic();
-    GuiSetFont(guiFont);
+    GuiSetStyle(DEFAULT, TEXT_SIZE, 15);
+    Font customFont = LoadRussianFontStatic("/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf", 20);
+    Texture2D stationTexture = LoadTexture("static/station.png");
+    
+
+    float RouteForSchedule = 0; 
 
     initializeNetwork();
 
@@ -385,11 +379,7 @@ int main() {
         }
 
         if (isRunning) {
-            int steps = simulationSpeed;
-            if (steps < 1) steps = 1;
-            for (int i = 0; i < steps; ++i) {
-                network.simulateStep();
-            }
+            network.simulateStep();
             printNewEvents();
             std::this_thread::sleep_for(std::chrono::milliseconds(500));
             if (network.getSimulationTime() == Time(0, 0))
@@ -399,38 +389,16 @@ int main() {
         BeginDrawing();
         ClearBackground(Color{240, 240, 245, 255});
 
-        drawControlPanel();
-        drawRailwayNetwork();
-        drawScheduleWindow();
+        drawControlPanel(customFont);
+        drawRailwayNetwork(customFont, stationTexture);
+        drawScheduleWindow(RouteForSchedule);
         drawStatisticsWindow();
 
         Rectangle startBtn = {10, 240, 230, 40};
         if (GuiButton(startBtn, isRunning ? "STOP" : "START")) {
             isRunning = !isRunning;
         }
-
-        Rectangle schedBtn = {10, 300, 230, 40};
-        if (GuiButton(schedBtn, "Schedule")) {
-            showSchedule = !showSchedule;
-        }
-
-        Rectangle statsBtn = {10, 360, 230, 40};
-        if (GuiButton(statsBtn, "Statistics")) {
-            showStatistics = !showStatistics;
-        }
     
-        if (showSchedule) {
-            DrawText("Route:", 10, 470, 12, GRAY);
-            Rectangle routeSlider = {10, 490, 230, 20};
-            float routeValue = (selectedRouteForSchedule);
-            int routeCount = network.getRoutes().size();
-            if (routeCount > 0) {
-                routeValue = GuiSlider(routeSlider, "0", std::to_string(routeCount - 1).c_str(), 
-                                       &routeValue, 0, (routeCount - 1));
-                selectedRouteForSchedule = routeValue;
-            }
-        }
-
         Rectangle addTrainBtn = {10, 600, 230, 40};
         if (GuiButton(addTrainBtn, "Add Custom Train")) {
             showAddTrainDialog = true;
@@ -445,12 +413,8 @@ int main() {
         Rectangle resetBtn = {10, 650, 230, 40};
         if (GuiButton(resetBtn, "Reset Experiment")) {
             isRunning = false;
-            showSchedule = false;
-            showStatistics = false;
             showAddTrainDialog = false;
-            selectedRouteForSchedule = 0;
             lastEventCount = 0;
-            simulationSpeed = 1;
             
             network = RailwayNetwork();
             initializeNetwork();
