@@ -8,3 +8,5 @@
 *.COM
 *.OBJ
 *.pdf
+build
+build/*
