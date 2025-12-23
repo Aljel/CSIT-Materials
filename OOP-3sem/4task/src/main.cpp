@@ -12,7 +12,8 @@
 #include <thread>
 #include <chrono>
 
-RailwayNetwork network;
+// 2 аргумента: шанс задержки и шанс проишествия в процентах
+RailwayNetwork network(80, 5);
 bool isRunning = false;
 int lastEventCount = 0;
 
@@ -22,7 +23,6 @@ int dialogState = 0;
 std::string newRouteName = "";
 int newRouteStart = 0;
 int newRouteEnd = 5;
-float newTrainSpeed = 70.0;
 std::vector<int> selectedStops;
 
 Font LoadRussianFontStatic(const char *fontPath, int fontSize) {
@@ -48,11 +48,11 @@ void initializeNetwork() {
     network.addStation("Voronezh", 400);
     network.addStation("Tambov", 500);
 
-    network.addRoute("ПЕРВЫЙ ПУТЬ", 0, 4);
-    network.addRoute("Regional", 1, 4);
-    network.addRoute("Local", 2, 5);
-    network.addRoute("Fast", 0, 3);
-    network.addRoute("Commuter", 1, 2);
+    network.addRoute("Первый путь", 0, 4);
+    network.addRoute("Вторйо путь", 1, 4);
+    network.addRoute("Третий путь", 2, 5);
+    network.addRoute("Четвертый путь", 0, 3);
+    network.addRoute("Пятый путь", 1, 2);
 
     Route* r0 = network.getRoute(0);
     if (r0) {
@@ -94,11 +94,11 @@ void initializeNetwork() {
         r4->addStop(StationStop(2, Time(14, 50), Time(14, 50), 0));
     }
 
-    network.addTrain(0, 70);
-    network.addTrain(1, 75);
-    network.addTrain(2, 65);
-    network.addTrain(3, 80);
-    network.addTrain(4, 60);
+    network.addTrain(0, -1);
+    network.addTrain(1, -1);
+    network.addTrain(2, -1);
+    network.addTrain(3, -1);
+    network.addTrain(4, -1);
 
     network.setSimulationStartTime(Time(6, 0));
     network.setSimulationStep(15);
@@ -164,11 +164,11 @@ void drawRailwayNetwork(Font customFont, Texture2D stationTexture) {
 void drawScheduleWindow(Font customFont, float& RouteForSchedule) {
     DrawRectangle(800, 600, 400, 350, Color{245, 245, 245, 255});
     DrawRectangleLines(800, 600, 400, 350, DARKGRAY);
-    DrawTextEx(customFont, "Расписание", {810, 610}, 30, 0, DARKGRAY);
+    DrawTextEx(customFont, "Расписание", Vector2{810, 610}, 30, 0, DARKGRAY);
 
     Route* r = network.getRoute(RouteForSchedule);
     if (r) {
-        DrawTextEx(customFont, ("Route: " + r->name).c_str(), {810, 650}, 20, 0, DARKGRAY);
+        DrawTextEx(customFont, ("Route: " + r->name).c_str(), Vector2{810, 650}, 20, 0, DARKGRAY);
         float yPos = 680;
 
         std::vector<StationStop> stops = r->stops;
@@ -176,7 +176,7 @@ void drawScheduleWindow(Font customFont, float& RouteForSchedule) {
             Station* s = network.getStation(it->stationId);
             if (s) {
                 std::string text = s->name + " " + it->arrivalTime.toString() + "-" + it->departureTime.toString();
-                DrawTextEx(customFont, text.c_str(), {810, yPos}, 20, 0, GRAY);
+                DrawTextEx(customFont, text.c_str(), Vector2{810, yPos}, 20, 0, GRAY);
                 yPos += 30;
             }
         }
@@ -192,31 +192,31 @@ void drawScheduleWindow(Font customFont, float& RouteForSchedule) {
 void drawStatisticsWindow(Font customFont) {
     DrawRectangle(300, 600, 400, 350, Color{245, 245, 245, 255});
     DrawRectangleLines(300, 600, 400, 350, DARKGRAY);
-    DrawTextEx(customFont, "Statistics", {310, 610}, 30, 0, DARKGRAY);
+    DrawTextEx(customFont, "Statistics", Vector2{310, 610}, 30, 0, DARKGRAY);
 
     SimulationStatistics stats = network.getStatistics();
     float yPos = 660;
 
-    DrawTextEx(customFont, ("Time: " + network.getSimulationTime().toString()).c_str(), {310, yPos}, 20, 0, GRAY);
+    DrawTextEx(customFont, ("Time: " + network.getSimulationTime().toString()).c_str(), Vector2{310, yPos}, 20, 0, GRAY);
     yPos += 30;
 
-    DrawTextEx(customFont, ("Events: " + std::to_string(stats.totalEvents)).c_str(), {310, yPos}, 20, 0, GRAY);
+    DrawTextEx(customFont, ("Events: " + std::to_string(stats.totalEvents)).c_str(), Vector2{310, yPos}, 20, 0, GRAY);
     yPos += 30;
 
-    DrawTextEx(customFont, ("Delays: " + std::to_string(stats.totalDelays)).c_str(), {310, yPos}, 20, 0, ORANGE);
+    DrawTextEx(customFont, ("Delays: " + std::to_string(stats.totalDelays)).c_str(), Vector2{310, yPos}, 20, 0, ORANGE);
     yPos += 30;
 
-    DrawTextEx(customFont, ("Accidents: " + std::to_string(stats.totalAccidents)).c_str(), {310, yPos}, 20, 0, RED);
+    DrawTextEx(customFont, ("Accidents: " + std::to_string(stats.totalAccidents)).c_str(), Vector2{310, yPos}, 20, 0, RED);
     yPos += 30;
 
     DrawTextEx(customFont, ("Delay time: " + std::to_string(stats.totalDelayMinutes) + " min").c_str(),
-             {310, yPos}, 20, 0, GRAY);
+             Vector2{310, yPos}, 20, 0, GRAY);
 }
 
 void drawControlPanel(Font customFont) {
     DrawRectangle(0, 0, 250, 1000, Color{200, 200, 200, 255});
     DrawRectangleLines(0, 0, 250, 1000, DARKGRAY);
-    DrawTextEx(customFont, "Управление", Vector2{10, 10}, 30, 0, DARKGRAY);
+    DrawTextEx(customFont, "Управление", Vector2{10, 10}, 16, 0, DARKGRAY);
 
     std::vector<Train> trains = network.getTrains();
     int delayed = 0, accidents = 0, completed = 0;
@@ -227,11 +227,11 @@ void drawControlPanel(Font customFont) {
         else if (it->getStatus() == TrainStatus::COMPLETED) completed++;
     }
 
-    DrawTextEx(customFont, ("Time: " + network.getSimulationTime().toString()).c_str(), {10, 50}, 20, 0, GRAY);
-    DrawTextEx(customFont, ("Trains: " + std::to_string(trains.size())).c_str(), {10, 75}, 20, 0, GRAY);
-    DrawTextEx(customFont, ("Completed: " + std::to_string(completed)).c_str(), {10, 100}, 20, 0, GREEN);
-    DrawTextEx(customFont, ("Delayed: " + std::to_string(delayed)).c_str(), {10, 125}, 20, 0, ORANGE);
-    DrawTextEx(customFont, ("Accidents: " + std::to_string(accidents)).c_str(), {10, 150}, 20, 0, RED);
+    DrawTextEx(customFont, ("Time: " + network.getSimulationTime().toString()).c_str(), Vector2{10, 50}, 11, 0, GRAY);
+    DrawTextEx(customFont, ("Trains: " + std::to_string(trains.size())).c_str(), Vector2{10, 75}, 11, 0, GRAY);
+    DrawTextEx(customFont, ("Completed: " + std::to_string(completed)).c_str(), Vector2{10, 100}, 11, 0, GREEN);
+    DrawTextEx(customFont, ("Delayed: " + std::to_string(delayed)).c_str(), Vector2{10, 125}, 11, 0, ORANGE);
+    DrawTextEx(customFont, ("Accidents: " + std::to_string(accidents)).c_str(), Vector2{10, 150}, 11, 0, RED);
 }
 
 void drawAddTrainDialog(Font customFont) {
@@ -242,26 +242,26 @@ void drawAddTrainDialog(Font customFont) {
     DrawRectangleLines(350, 100, 700, 600, DARKGRAY);
 
     if (dialogState == 0) {
-        DrawTextEx(customFont, "Create New Train Route", {370, 120}, 20, 0, DARKGRAY);
-        DrawTextEx(customFont, "Route Name:", {370, 170}, 14, 0, GRAY);
+        DrawTextEx(customFont, "Create New Train Route", Vector2{370, 120}, 20, 0, DARKGRAY);
+        DrawTextEx(customFont, "Route Name:", Vector2{370, 170}, 14, 0, GRAY);
         DrawRectangle(370, 190, 300, 30, Color{255, 255, 255, 255});
         DrawRectangleLines(370, 190, 300, 30, DARKGRAY);
-        DrawTextEx(customFont, newRouteName.c_str(), {375, 195}, 14, 0, DARKGRAY);
-        DrawTextEx(customFont, "(Press BACKSPACE to clear)", {370, 225}, 10, 0, Color{128, 128, 128, 255});
+        DrawTextEx(customFont, newRouteName.c_str(), Vector2{375, 195}, 14, 0, DARKGRAY);
+        DrawTextEx(customFont, "(Press BACKSPACE to clear)", Vector2{370, 225}, 10, 0, Color{128, 128, 128, 255});
 
-        DrawTextEx(customFont, "Start Station: ", {370, 260}, 12, 0, GRAY);
+        DrawTextEx(customFont, "Start Station: ", Vector2{370, 260}, 12, 0, GRAY);
         if (GuiButton({370, 280, 100, 30}, "-")) newRouteStart = (newRouteStart > 0) ? newRouteStart - 1 : 0;
         if (GuiButton({480, 280, 100, 30}, "+")) newRouteStart = (newRouteStart < 5) ? newRouteStart + 1 : 5;
 
-        DrawTextEx(customFont, "End Station: ", {370, 330}, 12, 0, GRAY);
+        DrawTextEx(customFont, "End Station: ", Vector2{370, 330}, 12, 0, GRAY);
         if (GuiButton({370, 350, 100, 30}, "-")) newRouteEnd = (newRouteEnd > 0) ? newRouteEnd - 1 : 0;
         if (GuiButton({480, 350, 100, 30}, "+")) newRouteEnd = (newRouteEnd < 5) ? newRouteEnd + 1 : 5;
 
-        DrawTextEx(customFont, "Speed (km/h): ", {370, 400}, 12, 0, GRAY);
-        Rectangle speedSlider = {370, 420, 300, 20};
-        newTrainSpeed = GuiSlider(speedSlider, "20", "120", &newTrainSpeed, 20.0f, 120.0f);
+        DrawTextEx(customFont, "Note: Speed will be calculated", Vector2{370, 400}, 12, 0, GRAY);
+        DrawTextEx(customFont, "automatically from route", Vector2{370, 420}, 12, 0, GRAY);
+        DrawTextEx(customFont, "distance and schedule time", Vector2{370, 440}, 12, 0, GRAY);
 
-        if (GuiButton({370, 560, 140, 40}, "Next")) {
+        if (GuiButton({370, 480, 140, 40}, "Next")) {
             if (!newRouteName.empty() && newRouteStart != newRouteEnd) {
                 dialogState = 1;
                 selectedStops.clear();
@@ -270,15 +270,15 @@ void drawAddTrainDialog(Font customFont) {
             }
         }
 
-        if (GuiButton({530, 560, 140, 40}, "Cancel")) {
+        if (GuiButton({530, 480, 140, 40}, "Cancel")) {
             showAddTrainDialog = false;
             newRouteName = "";
             dialogState = 0;
         }
 
     } else if (dialogState == 1) {
-        DrawTextEx(customFont, "Select Intermediate Stops", {370, 120}, 18, 0, DARKGRAY);
-        DrawTextEx(customFont, "(Start and End are already selected)", {370, 145}, 12, 0, Color{128, 128, 128, 255});
+        DrawTextEx(customFont, "Select Intermediate Stops", Vector2{370, 120}, 18, 0, DARKGRAY);
+        DrawTextEx(customFont, "(Start and End are already selected)", Vector2{370, 145}, 12, 0, Color{128, 128, 128, 255});
 
         std::vector<Station> stations = network.getStations();
         float yPos = 175;
@@ -295,7 +295,7 @@ void drawAddTrainDialog(Font customFont) {
 
             DrawRectangle(370, yPos, 250, 30, bgColor);
             DrawRectangleLines(370, yPos, 250, 30, DARKGRAY);
-            DrawTextEx(customFont, label.c_str(), {375, yPos + 8}, 12, 0, DARKGRAY);
+            DrawTextEx(customFont, label.c_str(), Vector2{375, yPos + 8}, 12, 0, DARKGRAY);
 
             if (GuiButton({630, yPos, 30, 30}, isSelected ? "-" : "+")) {
                 std::vector<int>::iterator findIt = std::find(selectedStops.begin(), selectedStops.end(), it->id);
@@ -328,7 +328,8 @@ void drawAddTrainDialog(Font customFont) {
                         currentTime = departureTime + Time(0, 10);
                     }
                 }
-                network.addTrain(network.getRoutes().size() - 1, newTrainSpeed);
+                // Добавляем поезд со скоростью -1 для автоматического расчёта
+                network.addTrain(network.getRoutes().size() - 1, -1);
                 showAddTrainDialog = false;
                 newRouteName = "";
                 dialogState = 0;
@@ -352,7 +353,7 @@ int main() {
     SetTargetFPS(60);
     GuiSetStyle(DEFAULT, TEXT_SIZE, 15);
 
-    Font customFont = LoadRussianFontStatic("/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf", 40);
+    Font customFont = LoadRussianFontStatic("/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf", 30);
     Texture2D stationTexture = LoadTexture("static/station.png");
 
     float RouteForSchedule = 0;
@@ -400,7 +401,6 @@ int main() {
             selectedStops.clear();
             newRouteStart = 0;
             newRouteEnd = 5;
-            newTrainSpeed = 70;
         }
 
         Rectangle resetBtn = {10, 650, 230, 40};
