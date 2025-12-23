@@ -50,11 +50,11 @@ public:
         return Time(totalMinutes / 60, totalMinutes % 60);
     }
 
-    int toMinutes() const {
+    int toMinutes() {
         return hours * 60 + minutes;
     }
 
-    std::string toString() const {
+    std::string toString() {
         std::string h = (hours < 10) ? "0" + std::to_string(hours) : std::to_string(hours);
         std::string m = (minutes < 10) ? "0" + std::to_string(minutes) : std::to_string(minutes);
         return h + ":" + m;
@@ -70,27 +70,27 @@ public:
         return fromMinutes(thisMin - otherMin);
     }
 
-    bool operator<(Time other) const {
+    bool operator<(Time other) {
         return toMinutes() < other.toMinutes();
     }
 
-    bool operator<=(Time other) const {
+    bool operator<=(Time other) {
         return toMinutes() <= other.toMinutes();
     }
 
-    bool operator>(Time other) const {
+    bool operator>(Time other) {
         return toMinutes() > other.toMinutes();
     }
 
-    bool operator>=(Time other) const {
+    bool operator>=(Time other) {
         return toMinutes() >= other.toMinutes();
     }
 
-    bool operator==(Time other) const {
+    bool operator==(Time other) {
         return toMinutes() == other.toMinutes();
     }
 
-    bool operator!=(Time other) const {
+    bool operator!=(Time other) {
         return toMinutes() != other.toMinutes();
     }
 };
@@ -162,7 +162,7 @@ public:
           delayMinutes(0), accidentDurationMinutes(0),
           distanceToNextStation(0), distanceTraveledToNextStation(0) {}
 
-    TrainStatus getStatus() const {
+    TrainStatus getStatus() {
         return status;
     }
 
@@ -170,7 +170,7 @@ public:
         status = s;
     }
 
-    int getDelayMinutes() const {
+    int getDelayMinutes() {
         return delayMinutes;
     }
 
@@ -182,7 +182,7 @@ public:
         delayMinutes = 0;
     }
 
-    int getAccidentDuration() const {
+    int getAccidentDuration() {
         return accidentDurationMinutes;
     }
 
@@ -190,11 +190,11 @@ public:
         accidentDurationMinutes = minutes;
     }
 
-    float getCurrentPosition() const {
+    float getCurrentPosition() {
         return currentPositionKm;
     }
 
-    Time getCurrentTime() const {
+    Time getCurrentTime() {
         return currentTime;
     }
 };
@@ -296,113 +296,8 @@ private:
     int delayMaxMinutes;
     float delayProbability;
 
-public:
-    RailwayNetwork()
-        : simulationTime(6, 0), simulationStep(15), nextTrainId(0), nextRouteId(0),
-          isInitialized(false),
-          accidentIntervalMinHours(2), accidentIntervalMaxHours(15),
-          accidentDurationMinMinutes(30), accidentDurationMaxMinutes(120),
-          delayMinMinutes(1), delayMaxMinutes(5), delayProbability(0.3f) {}
-
-    void addStation(std::string name, float positionKm) {
-        Station station(static_cast<int>(stations.size()), name, positionKm);
-        stations.push_back(station);
-    }
-
-    Station* getStation(int id) {
-        for (auto& station : stations) {
-            if (station.id == id) {
-                return &station;
-            }
-        }
-        return nullptr;
-    }
-
-    const std::vector<Station>& getStations() const {
-        return stations;
-    }
-
-    void addRoute(std::string name, int startId, int endId) {
-        Route route(nextRouteId++, name, startId, endId);
-        routes.push_back(route);
-    }
-
-    Route* getRoute(int id) {
-        for (auto& route : routes) {
-            if (route.id == id) {
-                return &route;
-            }
-        }
-        return nullptr;
-    }
-
-    std::vector<Route>& getRoutes() {
-        return routes;
-    }
-
-    void addTrain(int routeId, float speed = 70) {
-        Train train(nextTrainId++, routeId, speed);
-        trains.push_back(train);
-    }
-
-    Train* getTrain(int id) {
-        for (auto& train : trains) {
-            if (train.id == id) {
-                return &train;
-            }
-        }
-        return nullptr;
-    }
-
-    std::vector<Train>& getTrains() {
-        return trains;
-    }
-
-    void setSimulationStartTime(Time time) {
-        simulationTime = time;
-    }
-
-    void setSimulationStep(int minutes) {
-        if (minutes == 15 || minutes == 30) {
-            simulationStep = minutes;
-        }
-    }
-
-    void setAccidentInterval(int minHours, int maxHours) {
-        accidentIntervalMinHours = minHours;
-        accidentIntervalMaxHours = maxHours;
-    }
-
-    void setDelayParameters(int minMin, int maxMin, float probability) {
-        delayMinMinutes = minMin;
-        delayMaxMinutes = maxMin;
-        delayProbability = probability;
-    }
-
-    Time getSimulationTime() const {
-        return simulationTime;
-    }
-
-    void simulateStep() {
-        if (!isInitialized) {
-            initializeTrains();
-            isInitialized = true;
-        }
-
-        simulationTime = simulationTime + Time(0, simulationStep);
-        
-        for (auto& train : trains) {
-            updateTrain(train);
-        }
-
-        checkForAccidents();
-        checkForDelays();
-        updateSchedule();
-    }
-
-private:
     void initializeTrains() {
-        for (auto& train : trains) {
+        for (Train& train : trains) {
             Route* route = getRoute(train.routeId);
             if (route && !route->stops.empty()) {
                 train.currentStationIndex = 0;
@@ -574,13 +469,119 @@ private:
             }
         }
     }
+public:
+    RailwayNetwork()
+        : simulationTime(6, 0), simulationStep(15), nextTrainId(0), nextRouteId(0),
+          isInitialized(false),
+          accidentIntervalMinHours(2), accidentIntervalMaxHours(15),
+          accidentDurationMinMinutes(30), accidentDurationMaxMinutes(120),
+          delayMinMinutes(1), delayMaxMinutes(5), delayProbability(0.3f) {}
+
+    void addStation(std::string name, float positionKm) {
+        Station station(static_cast<int>(stations.size()), name, positionKm);
+        stations.push_back(station);
+    }
+
+    Station* getStation(int id) {
+        for (auto& station : stations) {
+            if (station.id == id) {
+                return &station;
+            }
+        }
+        return nullptr;
+    }
+
+    std::vector<Station>& getStations() {
+        return stations;
+    }
+
+    void addRoute(std::string name, int startId, int endId) {
+        Route route(nextRouteId++, name, startId, endId);
+        routes.push_back(route);
+    }
+
+    Route* getRoute(int id) {
+        for (auto& route : routes) {
+            if (route.id == id) {
+                return &route;
+            }
+        }
+        return nullptr;
+    }
+
+    std::vector<Route>& getRoutes() {
+        return routes;
+    }
+
+    void addTrain(int routeId, float speed = 70) {
+        Train train(nextTrainId++, routeId, speed);
+        trains.push_back(train);
+    }
+
+    Train* getTrain(int id) {
+        for (auto& train : trains) {
+            if (train.id == id) {
+                return &train;
+            }
+        }
+        return nullptr;
+    }
+
+    std::vector<Train>& getTrains() {
+        return trains;
+    }
+
+    void setSimulationStartTime(Time time) {
+        simulationTime = time;
+    }
+
+    void setSimulationStep(int minutes) {
+        if (minutes == 15 || minutes == 30) {
+            simulationStep = minutes;
+        }
+    }
+
+    void setAccidentInterval(int minHours, int maxHours) {
+        accidentIntervalMinHours = minHours;
+        accidentIntervalMaxHours = maxHours;
+    }
+
+    void setDelayParameters(int minMin, int maxMin, float probability) {
+        delayMinMinutes = minMin;
+        delayMaxMinutes = maxMin;
+        delayProbability = probability;
+    }
+
+    Time getSimulationTime() {
+        return simulationTime;
+    }
+
+    void simulateStep() {
+        if (!isInitialized) {
+            initializeTrains();
+            isInitialized = true;
+        }
+
+        simulationTime = simulationTime + Time(0, simulationStep);
+        
+        for (auto& train : trains) {
+            updateTrain(train);
+        }
+
+        checkForAccidents();
+        checkForDelays();
+        updateSchedule();
+    }
+
+private:
+    
 
 public:
-    const SimulationStatistics& getStatistics() const {
+    SimulationStatistics& getStatistics() {
         return statistics;
     }
 
-    std::vector<SimulationEvent> getEventLog() const {
+    std::vector<SimulationEvent> getEventLog() {
         return statistics.eventLog;
     }
 

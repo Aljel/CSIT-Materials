@@ -1,3 +1,7 @@
 [submodule "OOP-3sem/4task/external/raylib"]
 	path = OOP-3sem/4task/external/raylib
-	url = git@github.com:raysan5/raylib.git
+    url = git@github.com:raysan5/raylib.git
+
+[submodule "OOP-3sem/4task/external/raygui"]
+	path = OOP-3sem/4task/external/raygui
+	url = git@github.com:raysan5/raygui.git
