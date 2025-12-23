@@ -532,7 +532,7 @@ public:
           isInitialized(false),
           accidentIntervalMinHours(2), accidentIntervalMaxHours(15),
           accidentDurationMinMinutes(30), accidentDurationMaxMinutes(120),
-          delayMinMinutes(1), delayMaxMinutes(5), delayProbability(delayProb / 100), 
+          delayMinMinutes(1), delayMaxMinutes(10), delayProbability(delayProb / 100), 
           accidentProbability(accidentProb) {}
 
     void addStation(std::string name, float positionKm) {
@@ -571,10 +571,9 @@ public:
         return routes;
     }
 
-    void addTrain(int routeId, float speed = -1.0f) {
+    void addTrain(int routeId, float speed = -1) {
         Route* route = getRoute(routeId);
         if (route && speed < 0) {
-            // Вычисляем скорость автоматически
             speed = route->calculateAverageSpeed(stations);
         }
         Train train(nextTrainId++, routeId, speed);
@@ -590,7 +589,7 @@ public:
         return nullptr;
     }
 
-    std::vector<Train>& getTrains() {
+    std::vector<Train> getTrains() {
         return trains;
     }
 
@@ -602,17 +601,6 @@ public:
         if (minutes == 15 || minutes == 30) {
             simulationStep = minutes;
         }
-    }
-
-    void setAccidentInterval(int minHours, int maxHours) {
-        accidentIntervalMinHours = minHours;
-        accidentIntervalMaxHours = maxHours;
-    }
-
-    void setDelayParameters(int minMin, int maxMin, float probability) {
-        delayMinMinutes = minMin;
-        delayMaxMinutes = maxMin;
-        delayProbability = probability;
     }
 
     Time getSimulationTime() {
@@ -646,27 +634,18 @@ public:
     }
 
     void printStatistics() {
-        std::cout << "\n=== SIMULATION STATISTICS ===" << std::endl;
-        std::cout << "Current Time: " << simulationTime.toString() << std::endl;
-        std::cout << "Total Events: " << statistics.totalEvents << std::endl;
-        std::cout << "Total Delays: " << statistics.totalDelays << std::endl;
-        std::cout << "Total Accidents: " << statistics.totalAccidents << std::endl;
-        std::cout << "Total Delay Time: " << statistics.totalDelayMinutes << " minutes" << std::endl;
-        std::cout << "Total Accident Time: " << statistics.totalAccidentMinutes << " minutes" << std::endl;
-        std::cout << "Average Delay: " << statistics.getAverageDelay() << " minutes" << std::endl;
-        std::cout << "Trains Count: " << trains.size() << std::endl;
-        std::cout << "Routes Count: " << routes.size() << std::endl;
-        std::cout << "Stations Count: " << stations.size() << std::endl;
-
-        std::cout << "\n=== TRAIN SPEEDS ===" << std::endl;
-        for (const auto& train : trains) {
-            Route* route = getRoute(train.routeId);
-            if (route) {
-                std::cout << "Train " << train.id << " (Route: " << route->name
-                         << ") - Speed: " << train.speed << " km/h" << std::endl;
-            }
-        }
+        std::cout << "\nОБЩАЯ СТАТИСТИКА" << std::endl;
+        std::cout << "Время: " << simulationTime.toString() << std::endl;
+        std::cout << "Всего событий: " << statistics.totalEvents << std::endl;
+        std::cout << "Всего задержек: " << statistics.totalDelays << std::endl;
+        std::cout << "Всего происшествий: " << statistics.totalAccidents << std::endl;
+        std::cout << "Общее время задержек: " << statistics.totalDelayMinutes << " minutes" << std::endl;
+        std::cout << "Общее время происшествий: " << statistics.totalAccidentMinutes << " minutes" << std::endl;
+        std::cout << "Среднее время задержки: " << statistics.getAverageDelay() << " minutes" << std::endl;
+        std::cout << "Всего поещдов: " << trains.size() << std::endl;
+        std::cout << "Всего маршрутов: " << routes.size() << std::endl;
+        std::cout << "Всего станций: " << stations.size() << std::endl;
     }
 };
 
-#endif // TRAIN_SIMULATION_HPP
+#endif 

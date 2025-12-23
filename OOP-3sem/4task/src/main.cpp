@@ -30,8 +30,8 @@ Font LoadRussianFontStatic(const char *fontPath, int fontSize) {
     int* chars = LoadCodepoints(
         "АБВГДЕЁЖЗИЙКЛМНОПРСТУФХЦЧШЩЪЫЬЭЮЯабвгдеёжзийклмнопрстуфхцчшщъыьэюя"
         "0123456789"
-        ".,!?-+()[]{}<:;/\\\"'`~@#$%^&*=_| "
-        "QWERTYUIOPASDFGHJKLZXCVBNMqwertyuiopasdfghjklzxcvbnm",
+        ".,!?-+()[]{}:;/\\\"'`~@#$%^&*=_|<>° "
+        "QWERTYUIOPASDFGHJKLZXCVBNMqwertyuiopasdfghjklzxcvbnm", 
         &charsCount
     );
 
@@ -49,7 +49,7 @@ void initializeNetwork() {
     network.addStation("Tambov", 500);
 
     network.addRoute("Первый путь", 0, 4);
-    network.addRoute("Вторйо путь", 1, 4);
+    network.addRoute("Второй путь", 1, 4);
     network.addRoute("Третий путь", 2, 5);
     network.addRoute("Четвертый путь", 0, 3);
     network.addRoute("Пятый путь", 1, 2);
@@ -102,7 +102,6 @@ void initializeNetwork() {
 
     network.setSimulationStartTime(Time(6, 0));
     network.setSimulationStep(15);
-    network.setDelayParameters(1, 5, 0.5);
 }
 
 void printNewEvents() {
@@ -351,11 +350,12 @@ void drawAddTrainDialog(Font customFont) {
 int main() {
     InitWindow(1800, 1000, "Симулятор движения поездов");
     SetTargetFPS(60);
-    GuiSetStyle(DEFAULT, TEXT_SIZE, 15);
 
-    Font customFont = LoadRussianFontStatic("/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf", 30);
+    Font customFont = LoadRussianFontStatic("static/AdwaitaSans-Regular.ttf", 30);
     Texture2D stationTexture = LoadTexture("static/station.png");
 
+    GuiSetFont(customFont);
+    
     float RouteForSchedule = 0;
 
     initializeNetwork();
