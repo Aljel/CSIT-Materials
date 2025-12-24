@@ -15,6 +15,23 @@ add_executable(${PROJECT_NAME} ${SOURCES})
 # Линкуем raylib и raygui
 target_link_libraries(${PROJECT_NAME} raylib raygui)
 
+# Статические ресурсы (ИСПРАВЛЕННОЕ)
+set(STATIC_RESOURCES_DIR "${CMAKE_CURRENT_SOURCE_DIR}/static")
+
+if(WIN32)
+    # Debug и Release - копируем рядом с .exe
+    add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
+        COMMAND ${CMAKE_COMMAND} -E make_directory "$<TARGET_FILE_DIR:${PROJECT_NAME}>/static"
+        COMMAND ${CMAKE_COMMAND} -E copy_directory "${STATIC_RESOURCES_DIR}" "$<TARGET_FILE_DIR:${PROJECT_NAME}>/static"
+        COMMENT "Copying static resources to executable directory"
+    )
+else()
+    add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
+        COMMAND ${CMAKE_COMMAND} -E make_directory "$<TARGET_FILE_DIR:${PROJECT_NAME}>/static"
+        COMMAND ${CMAKE_COMMAND} -E copy_directory "${STATIC_RESOURCES_DIR}" "$<TARGET_FILE_DIR:${PROJECT_NAME}>/static"
+    )
+endif()
+
 # Платформо-зависимые библиотеки
 if (WIN32)
     target_link_libraries(${PROJECT_NAME} gdi32 winmm opengl32)
