@@ -12,3 +12,4 @@
 *.out
 build
 build/*
+ASM-3sem/masm-linux-2.0/*
