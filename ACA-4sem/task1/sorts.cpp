@@ -1,9 +1,10 @@
+#include "tester.hpp"
 #include <climits>
 #include <cmath>
 #include <iostream>
 #include <vector>
 
-void printVector(std::vector<int> array) {
+void printVector(std::vector<int> &array) {
     std::cout << "[";
     // size_t -- по сути беззнаковый int, который используется в vector
     for (size_t i = 0; i < array.size() - 1; i++) {
@@ -13,6 +14,7 @@ void printVector(std::vector<int> array) {
 }
 
 int numberRank(int num) {
+    num = std::abs(num);
     int i = 0;
     while (num > 0) {
         num /= 10;
@@ -28,12 +30,12 @@ void countingSort(std::vector<int> &array) {
     for (size_t i = 0; i < array.size(); i++) {
         if (array[i] < min)
             min = array[i];
-        else if (array[i] > max)
+        if (array[i] > max)
             max = array[i];
     }
 
     size_t length = max - min + 1;
-    std::vector<int> count(length, 0);
+    std::vector<size_t> count(length, 0);
 
     for (size_t i = 0; i < array.size(); i++) {
         // вычитаем минимум, так как длина массива соответствуем количеству
@@ -49,7 +51,7 @@ void countingSort(std::vector<int> &array) {
         // мы вставляем в изначальный массив count[i] элементов i + min
         for (int j = 0; j < count[i]; j++) {
             array[index] = i + min;
-            index += 1;
+            ++index;
         }
     }
 }
@@ -86,12 +88,7 @@ void radixSort(std::vector<int> &array) {
 }
 
 int main() {
-    std::vector<int> array = {99,  82,   73234, 64, 2355, 32,
-                              221, 3211, 965,   7,  5};
-    printVector(array);
-    countingSort(array);
-    printVector(array);
-    radixSort(array);
-    printVector(array);
+    tester::Tester t({tester::Config(radixSort, 10000, 50, 1, 1000)});
+    t.start();
     return 0;
 }
