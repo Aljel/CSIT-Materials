@@ -1,6 +1,8 @@
 #include "tester.hpp"
+#include <algorithm>
 #include <climits>
 #include <cmath>
+#include <cstdlib>
 #include <iostream>
 #include <vector>
 
@@ -87,8 +89,36 @@ void radixSort(std::vector<int> &array) {
     }
 }
 
+// итоговая функиця для поразрядной сортировки, обрабатывает отрицательные числа
+void LSD(std::vector<int> &array) {
+    // разбиваем данный изначально массив на два по знаку элементов
+    std::vector<int> neg_part;
+    std::vector<int> pos_part;
+
+    for (size_t i = 0; i < array.size(); i++) {
+        if (array[i] >= 0)
+            pos_part.push_back(array[i]);
+        if (array[i] < 0)
+            neg_part.push_back(-(array[i]));
+    }
+
+    radixSort(pos_part);
+    radixSort(neg_part);
+
+    // использую реверс, потому что тз не запрещает
+    std::reverse(neg_part.begin(), neg_part.end());
+
+    int safe_index = 0;
+    for (size_t i = 0; i < neg_part.size(); i++) {
+        array[safe_index++] = -(neg_part[i]);
+    }
+    for (size_t i = 0; i < pos_part.size(); i++) {
+        array[safe_index++] = pos_part[i];
+    }
+}
+
 int main() {
-    tester::Tester t({tester::Config(radixSort, 10000, 50, 1, 1000)});
+    tester::Tester t({tester::Config(LSD, 10000, 30, -1000, 1000)});
     t.start();
     return 0;
 }
