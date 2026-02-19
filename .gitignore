@@ -1,6 +1,5 @@
 *
 !/**/
-!*.*
 .vscode/
 *.exe
 *.obj
@@ -8,7 +7,6 @@
 *.COM
 *.OBJ
 *.pdf
-*.txt
 *.out
 build
 build/*

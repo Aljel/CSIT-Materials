@@ -1,7 +1,12 @@
 [submodule "OOP-3sem/4task/external/raylib"]
 	path = OOP-3sem/4task/external/raylib
     url = git@github.com:raysan5/raylib.git
-
 [submodule "OOP-3sem/4task/external/raygui"]
 	path = OOP-3sem/4task/external/raygui
-	url = git@github.com:raysan5/raygui.git
+    url = git@github.com:raysan5/raygui.git
+[submodule "Graphics-4sem/Libraries/raylib"]
+	path = Graphics-4sem/Libraries/raylib
+	url = https://github.com/raysan5/raylib.git
+[submodule "Graphics-4sem/Libraries/nfd"]
+	path = Graphics-4sem/Libraries/nfd
+	url = https://github.com/btzy/nativefiledialog-extended.git
