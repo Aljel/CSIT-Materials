@@ -9,4 +9,4 @@
 	url = https://github.com/raysan5/raylib.git
 [submodule "Graphics-4sem/Libraries/nfd"]
 	path = Graphics-4sem/Libraries/nfd
-	url = https://github.com/btzy/nativefiledialog-extended.git
+	url = git@github.com:btzy/nativefiledialog-extended.git
