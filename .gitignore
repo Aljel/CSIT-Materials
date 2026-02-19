@@ -8,5 +8,6 @@
 *.out
 build
 build/*
+*/Build/*
 ACA-4sem/*/*.txt
 ASM-3sem/masm-linux-2.0/*
