@@ -15,16 +15,18 @@ Font LoadRussianFontStatic(const char *fontPath, int fontSize) {
 
 int main() {
     SetConfigFlags(FLAG_WINDOW_RESIZABLE);
-    InitWindow(800, 600, "First Lab");
+    InitWindow(800, 600, "Second Lab");
     SetTargetFPS(60);
 
     Font f = LoadRussianFontStatic("Assets/Roboto-Regular.ttf", 100);
 
-    ssu::Figure &figure = ssu::figure::SNAIL;
-
     bool keepAspect = true;
+    bool imageAspect = true;
+
+    ssu::Figure figure = ssu::figure::HARE;
 
     while (!WindowShouldClose()) {
+
         const float Wx = static_cast<float>(GetScreenWidth());
         const float Wy = static_cast<float>(GetScreenHeight());
         float figureAspect = figure.Vx / figure.Vy;
@@ -35,8 +37,17 @@ int main() {
             keepAspect = !keepAspect;
         }
 
-        BeginDrawing();
+        if (IsKeyPressed(KEY_N)) {
+            imageAspect = !imageAspect;
+        }
 
+        if (imageAspect) {
+            figure = ssu::figure::HARE;
+        } else {
+            figure = ssu::figure::SNAIL;
+        }
+
+        BeginDrawing();
         ClearBackground(SKYBLUE);
 
         float Sx, Sy;
