@@ -6,6 +6,7 @@
 *.OBJ
 *.pdf
 *.out
+*.zip
 build
 build/*
 */Build/*

@@ -18,7 +18,7 @@ clean() {
 }
 
 zip() {
-    git archive --format zip -o task1-zhelezko.zip HEAD
+    git archive --format zip -o task1_zhelezko.zip HEAD
 }
 
 run () {
