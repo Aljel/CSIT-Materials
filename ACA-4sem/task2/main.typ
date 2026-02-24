@@ -25,21 +25,18 @@
   )
 )
 
-
-#let xs = (0, 1, 2, 3, 4)
-
-#lq.diagram(
+#show: lq.set-diagram(width: 14cm, height: 10cm)
+#show lq.selector(lq.diagram): set text(0.8em)
+#let xs = (0, 50, 100, 500, 1000)
+#align(center, lq.diagram(
   title: [Время выполнения сортировки],
-  xlabel: "Размер массива данных", 
+  xlabel: "Количество элементов массива данных, тыс.", 
   ylabel: "Время работы, мс",
+  xlim: (0, 1000),
+  legend: (position: left, dy: -40%),
 
-  lq.plot(xs, (18, ), mark: "s", label: [mergeSort]),
-  lq.plot(
-    xs, x => 2*calc.cos(x) + 3, 
-    mark: "o", label: [heapSort]
-  ),
-  lq.plot( 
-    xs, (1),
-    label: [quickSort]
-  )
+  lq.plot(xs, (0, 33, 58, 292, 591), label: [mergeSort]),
+  lq.plot(xs, (0, 21, 29, 142, 290), label: [heapSort]),
+  lq.plot( xs, (0, 18, 30, 141, 288), label: [quickSort])
+)
 )
