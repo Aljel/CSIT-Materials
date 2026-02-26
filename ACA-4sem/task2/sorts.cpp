@@ -120,7 +120,7 @@ void mergeHelper(std::vector<int> &array, int l, int r, int m) {
         buf[cur++] = array[j++];
     }
     // Возвращаем отсортированные элементы в исходный массив
-    for (int t = 0; t < buf.size(); ++t) {
+    for (size_t t = 0; t < buf.size(); ++t) {
         array[l + t] = buf[t];
     }
 }
@@ -149,11 +149,9 @@ std::vector<int> generateRandomVector(size_t size, int min, int max) {
 }
 
 void testSort(void (*testFunc)(std::vector<int> &), int min, int max) {
-    std::vector<int> sizes = {50000, 100000, 500000, 1000000, 10000000};
-    for (int i = 0; i < 5; i++) {
-        std::vector<int> array = generateRandomVector(sizes[i], min, max);
+    for (int size = 50000; size < 1000001; size += 50000) {
+        std::vector<int> array = generateRandomVector(size, min, max);
         double total = 0.0;
-        std::cout << "Testing func on " << sizes[i] << "\n";
 
         for (int j = 0; j < 5; j++) {
             std::clock_t start = std::clock();
@@ -161,18 +159,14 @@ void testSort(void (*testFunc)(std::vector<int> &), int min, int max) {
             std::clock_t end = std::clock();
             double cpu_time_used = ((double)(end - start)) / CLOCKS_PER_SEC;
             total += cpu_time_used;
-            std::cout << j + 1 << " Time: " << cpu_time_used << "\n";
         }
 
         double avg = total / 5;
-        std::cout << "Average Time: " << avg << "\n";
+        std::cout << avg * 1000 << ", ";
     }
 }
 
 int main() {
-    std::vector<int> aboba = {325,  253521,   7675, 0,    5235, 5235,
-                              5235, -4235235, 5235, 2352, -32,  4,
-                              1,    45,       2,    5,    53,   0};
     std::cout << "\nMERGE SORT\n\n";
     testSort(mergeSort, -1000, 1000);
     std::cout << "\nHEAP SORT\n\n";
