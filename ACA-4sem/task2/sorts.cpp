@@ -150,12 +150,12 @@ std::vector<int> generateRandomVector(size_t size, int min, int max) {
 
 void testSort(void (*testFunc)(std::vector<int> &), int min, int max) {
     for (int size = 50000; size < 1000001; size += 50000) {
-        std::vector<int> array = generateRandomVector(size, min, max);
         double total = 0.0;
 
         for (int j = 0; j < 5; j++) {
+            std::vector<int> array = generateRandomVector(size, min, max);
             std::clock_t start = std::clock();
-            heapSort(array);
+            testFunc(array);
             std::clock_t end = std::clock();
             double cpu_time_used = ((double)(end - start)) / CLOCKS_PER_SEC;
             total += cpu_time_used;
@@ -173,6 +173,7 @@ int main() {
     testSort(heapSort, -1000, 1000);
     std::cout << "\nQUICK SORT\n\n";
     testSort(quickSort, -1000, 1000);
-
+    std::cout << "\nMERGE SORT\n\n";
+    testSort(mergeSort, -1000, 1000);
     return 0;
 }
