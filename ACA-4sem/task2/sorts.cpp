@@ -3,7 +3,7 @@
 #include <random>
 #include <vector>
 
-std::mt19937 rnd(time(NULL));
+std::mt19937 rnd1(time(NULL));
 
 void printVector(std::vector<int> &array) {
     std::cout << "[";
@@ -125,11 +125,11 @@ void mergeHelper(std::vector<int> &array, int l, int r, int m) {
     }
 }
 
-void mergeHelper2(std::vector<int> &array, int l, int r) {
+void mergeHelper2(std::vector<int> &array, size_t l, size_t r) {
     if (l >= r)
         return;
     // разделяющий элемент
-    int m = (l + r) / 2;
+    size_t m = l + (r - l) / 2;
 
     mergeHelper2(array, l, m);
     mergeHelper2(array, m + 1, r);
@@ -137,36 +137,39 @@ void mergeHelper2(std::vector<int> &array, int l, int r) {
 }
 
 void mergeSort(std::vector<int> &array) {
-    mergeHelper2(array, 0, static_cast<int>(array.size()) - 1);
+    mergeHelper2(array, 0, array.size() - 1);
 }
 
 std::vector<int> generateRandomVector(size_t size, int min, int max) {
     std::vector<int> result(size);
     for (size_t i = 0; i < size; ++i) {
-        result[i] = rnd() % (max - min + 1) + min;
+        result[i] = rnd1() % (max - min + 1) + min;
     }
     return result;
 }
 
 void testSort(void (*testFunc)(std::vector<int> &), int min, int max) {
     for (int size = 50000; size < 1000001; size += 50000) {
-        double total = 0.0;
+        std::clock_t total = 0.0;
 
         for (int j = 0; j < 5; j++) {
             std::vector<int> array = generateRandomVector(size, min, max);
             std::clock_t start = std::clock();
             testFunc(array);
             std::clock_t end = std::clock();
-            double cpu_time_used = ((double)(end - start)) / CLOCKS_PER_SEC;
-            total += cpu_time_used;
+            std::clock_t cpu_time_used = (end - start);
+            total += (cpu_time_used) / 5;
         }
 
-        double avg = total / 5;
-        std::cout << avg * 1000 << ", ";
+        // double avg = total / 5;
+        std::cout << total << ", ";
     }
 }
 
+#include "tester.hpp"
+
 int main() {
+    tester::Tester t;
     std::cout << "\nMERGE SORT\n\n";
     testSort(mergeSort, -1000, 1000);
     std::cout << "\nHEAP SORT\n\n";
