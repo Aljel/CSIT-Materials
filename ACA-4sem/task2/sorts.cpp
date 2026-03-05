@@ -74,7 +74,7 @@ void heapHelper(std::vector<int> &array, int index, int len) {
 }
 
 void heapSort(std::vector<int> &array) {
-    int len = static_cast<int>(array.size());
+    int len = array.size();
 
     for (int i = len / 2 - 1; i >= 0; i--) {
         heapHelper(array, i, len);
@@ -88,7 +88,7 @@ void heapSort(std::vector<int> &array) {
     }
 }
 
-void mergeHelper(std::vector<int> &array, int l, int r, int m) {
+void mergeHelper(std::vector<int> &array, size_t l, size_t r, size_t m) {
     if (l >= r || m < l || m > r) {
         return;
     }
@@ -101,7 +101,7 @@ void mergeHelper(std::vector<int> &array, int l, int r, int m) {
     }
 
     std::vector<int> buf(r - l + 1, 0);
-    int cur = 0, i = l, j = m + 1;
+    size_t cur = 0, i = l, j = m + 1;
 
     // Слияние пока есть элементы в обеих частях
     while (i <= m && j <= r) {
@@ -169,14 +169,23 @@ void testSort(void (*testFunc)(std::vector<int> &), int min, int max) {
 #include "tester.hpp"
 
 int main() {
-    tester::Tester t;
-    std::cout << "\nMERGE SORT\n\n";
-    testSort(mergeSort, -1000, 1000);
-    std::cout << "\nHEAP SORT\n\n";
-    testSort(heapSort, -1000, 1000);
-    std::cout << "\nQUICK SORT\n\n";
-    testSort(quickSort, -1000, 1000);
-    std::cout << "\nMERGE SORT\n\n";
-    testSort(mergeSort, -1000, 1000);
+    std::cout << "QUICK SORT\n";
+    std::vector<int> test = generateRandomVector(20, -50, 50);
+    printVector(test);
+    quickSort(test);
+    printVector(test);
+
+    std::cout << "MERGE SORT\n";
+    std::vector<int> test1 = generateRandomVector(20, -50, 50);
+    printVector(test1);
+    mergeSort(test1);
+    printVector(test1);
+
+    std::cout << "HEAP SORT\n";
+    std::vector<int> test2 = generateRandomVector(20, -50, 50);
+    printVector(test2);
+    heapSort(test2);
+    printVector(test2);
+
     return 0;
 }

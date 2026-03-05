@@ -1,5 +1,4 @@
 #include "trees.hpp"
-#include <iomanip>
 #include <iostream>
 #include <ncurses.h>
 namespace tree {
@@ -95,9 +94,7 @@ treeNode *Prev(treeNode *tr, int x) {
 
 void Delete(treeNode *&tr, treeNode *v) {
     treeNode *p = v->parent;
-    if (!p) {
-        tr = nullptr;
-    } else if (!v->left && !v->right) {
+    if (!v->left && !v->right) {
         if (p->left == v) {
             p->left = nullptr;
         }

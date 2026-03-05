@@ -29,9 +29,8 @@ int main() {
         std::cin >> x;
         tree::insert(tr, x);
     }
-    testCout(tr);
 
-    tree::treeNode *elem = tree::find(tr, x);
+    tree::treeNode *elem = tree::find(tr, 9);
     tree::Delete(tr, elem);
 
     testCout(tr);
