@@ -9,25 +9,70 @@
 #include <sstream>
 #include <vector>
 
-Font LoadRussianFontStatic(const char *fontPath, int fontSize) {
-    std::vector<int> codepoints;
-    for (int i = 0; i <= 0x04FF; i++) {
-        codepoints.push_back(i);
+bool isIgnorableLine(const std::string &line) {
+    return line.find_first_not_of(" \t\r\n") == std::string::npos ||
+           line.front() == '#';
+}
+
+ssu::Figure readFromFile(const char *fileName) {
+    std::ifstream in(fileName);
+    ssu::Figure figure;
+    int r, g, b;
+    float thickness;
+    std::string line; // временная переменная, в которую считываются строки
+    while (in) {
+        // считываем очередную строку
+        getline(in, line);
+        if (isIgnorableLine(line)) {
+            continue;
+        }
+        std::stringstream s(line);
+        std::string cmd;      // переменная для имени команды
+        s >> cmd;             // считываем имя команды
+        if (cmd == "frame") { // размеры изображения
+            s >> figure.Vx >> figure.Vy;
+            std::cout << figure.Vx << ' ' << figure.Vy << std::endl;
+        } else if (cmd == "color") {     // цвет линии
+            s >> r >> g >> b;            // считываем три компоненты цвета
+        } else if (cmd == "thickness") { // толщина линии
+            s >> thickness;              // считываем значение толщины
+        } else if (cmd == "path") {      // набор точек
+            std::vector<Vec2> vertices;  // список точек ломаной
+            int n;                       // количество точек
+            s >> n;
+            std::string str1; // дополнительная строка для чтения из файла
+            while (n > 0) {   // пока не все точки считаны
+                getline(in, str1);
+                if (isIgnorableLine(str1)) {
+                    continue;
+                }
+                float x, y;
+                std::stringstream s1(str1);
+                s1 >> x >> y;
+                vertices.push_back(Vec2(x, y)); // добавляем точку в список
+                --n;
+            }
+            // все точки считаны, генерируем ломаную (path) и кладем ее в список
+            figure.paths.push_back(
+                ssu::Path(vertices,
+                          Color{static_cast<unsigned char>(r),
+                                static_cast<unsigned char>(g),
+                                static_cast<unsigned char>(b), 255},
+                          thickness));
+        }
     }
-    Font font =
-        LoadFontEx(fontPath, fontSize, codepoints.data(), codepoints.size());
-    return font;
+    return figure;
 }
 
 int main() {
     SetConfigFlags(FLAG_WINDOW_RESIZABLE);
-    InitWindow(800, 600, "Second Lab");
+    InitWindow(800, 600, "Third Lab");
     SetTargetFPS(60);
 
-    Font f = LoadRussianFontStatic("Assets/Roboto-Regular.ttf", 100);
-
-    bool keepAspect = true;
-    bool imageAspect = true;
+    if (NFD_Init() != NFD_OKAY) {
+        std::cerr << "Ошибка инициализации NFD: " << NFD_GetError() << "\n";
+        return -1;
+    }
 
     ssu::Figure figure = ssu::figure::HARE;
 
@@ -45,14 +90,6 @@ int main() {
         const float windowAspect = Wx / Wy;
         float S = figureAspect < windowAspect ? Wy / figure.Vy : Wx / figure.Vx;
 
-        if (IsKeyPressed(KEY_M)) {
-            keepAspect = !keepAspect;
-        }
-
-        if (IsKeyPressed(KEY_N)) {
-            imageAspect = !imageAspect;
-        }
-
         if (IsKeyDown(KEY_Q)) {
             T = translate(-Wcx, -Wcy) *
                 T;                  // перенос начала координат в (Wcx, Wcy)
@@ -69,30 +106,26 @@ int main() {
             T = Mat3(1);
         }
 
-        if (imageAspect) {
-            figure = ssu::figure::HARE;
-        }
-
-        float Sx, Sy;
-        if (keepAspect) {
-            float figureAspect = figure.Vx / figure.Vy;
-            Sx = Sy =
-                figureAspect < windowAspect ? Wy / figure.Vy : Wx / figure.Vx;
-        } else {
-            Sx = Wx / figure.Vx;
-            Sy = Wy / figure.Vy;
-        }
-
-        const float Ty = Sy * figure.Vy; // смещение в положительную сторону по
-                                         // оси Oy после смены знака
-        // Преобразования применяются справа налево. Сначала масштабирование, а
-        // потом перенос. В initT совмещаем эти два преобразования.
-        initT = translate(0, Ty) * scale(Sx, -Sy);
-
-        // совмещение начального преобразования и накопленных преобразований
         Mat3 M = T * initT;
         BeginDrawing();
-        ClearBackground(SKYBLUE);
+        ClearBackground(LIGHTGRAY);
+
+        if (GuiButton({Wx - 140, 20, 120, 30}, "OPEN FILE")) {
+            nfdchar_t *outPath;
+            nfdfilteritem_t filterItem[2] = {{"Text files", "txt"},
+                                             {"All files", "*"}};
+            nfdresult_t result =
+                NFD_OpenDialog(&outPath, filterItem, 2, nullptr);
+            if (result == NFD_OKAY) {
+                figure = readFromFile(outPath);
+                const float figureAspect = figure.Vx / figure.Vy;
+                const float S = figureAspect < windowAspect ? Wy / figure.Vy
+                                                            : Wx / figure.Vx;
+                const float Ty = S * figure.Vy;
+                initT = translate(0, Ty) * scale(S, -S);
+                NFD_FreePath(outPath);
+            }
+        }
 
         for (const auto &lines : figure.paths) {
             Vec2 start = normalize(M * Vec3(lines.vertices[0], 1));
@@ -108,6 +141,6 @@ int main() {
     }
 
     CloseWindow();
-
+    NFD_Quit();
     return 0;
 }

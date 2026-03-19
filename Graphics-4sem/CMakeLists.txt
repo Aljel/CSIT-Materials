@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.5)
-project(ivanov-graphics)
+project(zhelezko-graphics)
 
 set(CMAKE_CXX_STANDARD 20)
 set(BUILD_SHARED_LIBS OFF)
