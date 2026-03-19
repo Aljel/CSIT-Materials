@@ -26,3 +26,17 @@ inline Mat3 rotate(float theta) {
     res[1][0] = -res[0][1];
     return res;
 }
+
+// Зеркальное отражение относительно оси Ox (меняем знак Y)
+inline Mat3 mirrorX() {
+    Mat3 res = Mat3(1.f);
+    res[1][1] = -1.f;
+    return res;
+}
+
+// Зеркальное отражение относительно оси Oy (меняем знак X)
+inline Mat3 mirrorY() {
+    Mat3 res = Mat3(1.f);
+    res[0][0] = -1.f;
+    return res;
+}

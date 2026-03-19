@@ -89,21 +89,78 @@ int main() {
         float figureAspect = figure.Vx / figure.Vy;
         const float windowAspect = Wx / Wy;
         float S = figureAspect < windowAspect ? Wy / figure.Vy : Wx / figure.Vx;
-
-        if (IsKeyDown(KEY_Q)) {
-            T = translate(-Wcx, -Wcy) *
-                T;                  // перенос начала координат в (Wcx, Wcy)
-            T = rotate(-0.01f) * T; // поворот на -0.01 радиан относительно
-            // нового центра
-            T = translate(Wcx, Wcy) * T; // перенос начала координат обратно
-        }
-
-        if (IsKeyDown(KEY_W)) {
-            T = translate(0, -1) * T;
-        }
-
         if (IsKeyPressed(KEY_C)) {
             T = Mat3(1);
+        }
+        // Одиночный сдвиг на 1 пиксель
+        if (IsKeyDown(KEY_W))
+            T = translate(0, -1) * T; // Вверх
+        if (IsKeyDown(KEY_S))
+            T = translate(0, 1) * T; // Вниз
+        if (IsKeyDown(KEY_A))
+            T = translate(-1, 0) * T; // Влево
+        if (IsKeyDown(KEY_D))
+            T = translate(1, 0) * T; // Вправо
+
+        // Усиленный сдвиг на 10 пикселей
+        if (IsKeyDown(KEY_T))
+            T = translate(0, -10) * T; // Вверх
+        if (IsKeyDown(KEY_G))
+            T = translate(0, 10) * T; // Вниз
+        if (IsKeyDown(KEY_F))
+            T = translate(-10, 0) * T; // Влево
+        if (IsKeyDown(KEY_H))
+            T = translate(10, 0) * T; // Вправо
+
+        // Повороты относительно центра окна
+        if (IsKeyDown(KEY_Q)) { // Против часовой на 0.01
+            T = translate(Wcx, Wcy) * rotate(-0.01f) * translate(-Wcx, -Wcy) *
+                T;
+        }
+        if (IsKeyDown(KEY_E)) { // По часовой на 0.01
+            T = translate(Wcx, Wcy) * rotate(0.01f) * translate(-Wcx, -Wcy) * T;
+        }
+        if (IsKeyDown(KEY_Y)) { // Против часовой на 0.05
+            T = translate(Wcx, Wcy) * rotate(-0.05f) * translate(-Wcx, -Wcy) *
+                T;
+        }
+        if (IsKeyDown(KEY_R)) { // По часовой на 0.05
+            T = translate(Wcx, Wcy) * rotate(0.05f) * translate(-Wcx, -Wcy) * T;
+        }
+
+        // Равномерное масштабирование относительно центра (Z, X)
+        if (IsKeyDown(KEY_Z)) { // Увеличение в 1.1 раза
+            T = translate(Wcx, Wcy) * scale(1.1f) * translate(-Wcx, -Wcy) * T;
+        }
+        if (IsKeyDown(KEY_X)) { // Уменьшение в 1.1 раза
+            T = translate(Wcx, Wcy) * scale(1.0f / 1.1f) *
+                translate(-Wcx, -Wcy) * T;
+        }
+
+        // Растяжение/сжатие по осям относительно центра
+        if (IsKeyDown(KEY_I)) { // Растяжение по X
+            T = translate(Wcx, Wcy) * scale(1.1f, 1.0f) *
+                translate(-Wcx, -Wcy) * T;
+        }
+        if (IsKeyDown(KEY_K)) { // Сжатие по X
+            T = translate(Wcx, Wcy) * scale(1.0f / 1.1f, 1.0f) *
+                translate(-Wcx, -Wcy) * T;
+        }
+        if (IsKeyDown(KEY_O)) { // Растяжение по Y
+            T = translate(Wcx, Wcy) * scale(1.0f, 1.1f) *
+                translate(-Wcx, -Wcy) * T;
+        }
+        if (IsKeyDown(KEY_L)) { // Сжатие по Y
+            T = translate(Wcx, Wcy) * scale(1.0f, 1.0f / 1.1f) *
+                translate(-Wcx, -Wcy) * T;
+        }
+
+        // Зеркальное отражение относительно центра
+        if (IsKeyPressed(KEY_U)) { // Отражение по горизонтали (инвертируем Y)
+            T = translate(Wcx, Wcy) * mirrorY() * translate(-Wcx, -Wcy) * T;
+        }
+        if (IsKeyPressed(KEY_J)) { // Отражение по вертикали (инвертируем X)
+            T = translate(Wcx, Wcy) * mirrorX() * translate(-Wcx, -Wcy) * T;
         }
 
         Mat3 M = T * initT;
