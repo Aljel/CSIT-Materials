@@ -68,6 +68,7 @@ int main() {
     SetConfigFlags(FLAG_WINDOW_RESIZABLE);
     InitWindow(800, 600, "Third Lab");
     SetTargetFPS(60);
+    SetExitKey(KEY_NULL);
 
     if (NFD_Init() != NFD_OKAY) {
         std::cerr << "Ошибка инициализации NFD: " << NFD_GetError() << "\n";
@@ -89,7 +90,7 @@ int main() {
         float figureAspect = figure.Vx / figure.Vy;
         const float windowAspect = Wx / Wy;
         float S = figureAspect < windowAspect ? Wy / figure.Vy : Wx / figure.Vx;
-        if (IsKeyPressed(KEY_C)) {
+        if (IsKeyPressed(KEY_ESCAPE)) {
             T = Mat3(1);
         }
         // Одиночный сдвиг на 1 пиксель
