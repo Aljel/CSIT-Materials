@@ -22,7 +22,7 @@ treeNode *createRoot(int x) {
     return n;
 }
 
-void rotateRight(treeNode *root, treeNode *x) {
+void rotateRight(treeNode *&root, treeNode *x) {
     treeNode *y = x->left;
 
     // делаем правого ребенка Y левым ребенком X
@@ -49,7 +49,7 @@ void rotateRight(treeNode *root, treeNode *x) {
     y->right = x;
 }
 
-void rotateLeft(treeNode *root, treeNode *x) {
+void rotateLeft(treeNode *&root, treeNode *x) {
     treeNode *y = x->right;
 
     // делаем левого ребенка Y правым ребенком X
@@ -103,14 +103,14 @@ treeNode *sibling(treeNode *x) {
     return nullptr;
 }
 
-void insertNode5(treeNode *tr, treeNode *x);
-void insertNode4(treeNode *tr, treeNode *x);
-void insertNode3(treeNode *tr, treeNode *x);
-void insertNode2(treeNode *tr, treeNode *x);
-void insertNode1(treeNode *tr, treeNode *x);
+void insertNode5(treeNode *&tr, treeNode *x);
+void insertNode4(treeNode *&tr, treeNode *x);
+void insertNode3(treeNode *&tr, treeNode *x);
+void insertNode2(treeNode *&tr, treeNode *x);
+void insertNode1(treeNode *&tr, treeNode *x);
 
 // родитель красный, дядя черный. Дед, брат и дети черные
-void insertNode5(treeNode *tr, treeNode *x) {
+void insertNode5(treeNode *&tr, treeNode *x) {
     treeNode *g = grandfather(x);
     treeNode *p = x->parent;
     p->col = 'b';
@@ -122,7 +122,7 @@ void insertNode5(treeNode *tr, treeNode *x) {
 }
 
 // родитель красный, дядя черный
-void insertNode4(treeNode *tr, treeNode *x) {
+void insertNode4(treeNode *&tr, treeNode *x) {
     treeNode *g = grandfather(x);
     treeNode *p = x->parent;
     if (x == p->right && p == g->left) {
@@ -136,7 +136,7 @@ void insertNode4(treeNode *tr, treeNode *x) {
 }
 
 // родитель и дядя красные
-void insertNode3(treeNode *tr, treeNode *x) {
+void insertNode3(treeNode *&tr, treeNode *x) {
     treeNode *u = uncle(x);
     treeNode *g = grandfather(x);
     treeNode *p = x->parent;
@@ -150,20 +150,20 @@ void insertNode3(treeNode *tr, treeNode *x) {
 }
 
 // родитель красный
-void insertNode2(treeNode *tr, treeNode *x) {
+void insertNode2(treeNode *&tr, treeNode *x) {
     if (x->parent->col == 'r')
         insertNode3(tr, x);
 }
 
 // проверка на корень
-void insertNode1(treeNode *tr, treeNode *x) {
+void insertNode1(treeNode *&tr, treeNode *x) {
     if (!x->parent)
         x->col = 'b';
     else
         insertNode2(tr, x);
 }
 
-void insertNodePrep(treeNode *tr, treeNode *prev, int x) {
+void insertNodePrep(treeNode *&tr, treeNode *prev, int x) {
     if (x < prev->inf && !prev->left) {
         prev->left = createNode(prev, x);
         insertNode1(tr, prev->left);
@@ -177,17 +177,17 @@ void insertNodePrep(treeNode *tr, treeNode *prev, int x) {
     }
 }
 
-void insertNode(treeNode *tr, int x) { insertNodePrep(tr, tr, x); }
+void insertNode(treeNode *&tr, int x) { insertNodePrep(tr, tr, x); }
 
-void deleteNode1(treeNode *tr, treeNode *x);
-void deleteNode2(treeNode *tr, treeNode *x);
-void deleteNode3(treeNode *tr, treeNode *x);
-void deleteNode4(treeNode *tr, treeNode *x);
-void deleteNode5(treeNode *tr, treeNode *x);
-void deleteNode6(treeNode *tr, treeNode *x);
+void deleteNode1(treeNode *&tr, treeNode *x);
+void deleteNode2(treeNode *&tr, treeNode *x);
+void deleteNode3(treeNode *&tr, treeNode *x);
+void deleteNode4(treeNode *&tr, treeNode *x);
+void deleteNode5(treeNode *&tr, treeNode *x);
+void deleteNode6(treeNode *&tr, treeNode *x);
 
 // x - корень дерева, одна ветка
-void deleteNode1(treeNode *tr, treeNode *x) {
+void deleteNode1(treeNode *&tr, treeNode *x) {
     if (!x->parent) {
         if (x->left)
             tr = x->left;
@@ -198,7 +198,7 @@ void deleteNode1(treeNode *tr, treeNode *x) {
         deleteNode2(tr, x);
 }
 
-void deleteNode2(treeNode *tr, treeNode *x) {
+void deleteNode2(treeNode *&tr, treeNode *x) {
     treeNode *s = sibling(x);
     treeNode *p = x->parent;
     if (s->col == 'r') {
@@ -212,7 +212,7 @@ void deleteNode2(treeNode *tr, treeNode *x) {
     deleteNode3(tr, x);
 }
 
-void deleteNode3(treeNode *tr, treeNode *x) {
+void deleteNode3(treeNode *&tr, treeNode *x) {
     treeNode *s = sibling(x);
     treeNode *p = x->parent;
     if (p->col == 'b' && s->col == 'b' && (!s->left || s->left->col == 'b') &&
@@ -223,7 +223,7 @@ void deleteNode3(treeNode *tr, treeNode *x) {
         deleteNode4(tr, x);
 }
 
-void deleteNode4(treeNode *tr, treeNode *x) {
+void deleteNode4(treeNode *&tr, treeNode *x) {
     treeNode *s = sibling(x);
     treeNode *p = x->parent;
     if (p->col == 'r' && s->col == 'b' && (!s->left || s->left->col == 'b') &&
@@ -234,7 +234,7 @@ void deleteNode4(treeNode *tr, treeNode *x) {
         deleteNode5(tr, x);
 }
 
-void deleteNode5(treeNode *tr, treeNode *x) {
+void deleteNode5(treeNode *&tr, treeNode *x) {
     treeNode *s = sibling(x);
     treeNode *p = x->parent;
     if (s->col == 'b') {
@@ -253,21 +253,21 @@ void deleteNode5(treeNode *tr, treeNode *x) {
     deleteNode6(tr, x);
 }
 
-void deleteNode6(treeNode *tr, treeNode *x) {
+void deleteNode6(treeNode *&tr, treeNode *x) {
     treeNode *s = sibling(x);
     treeNode *p = x->parent;
     s->col = p->col;
     p->col = 'b';
     if (x == p->left) {
         s->right->col = 'b';
-        rotateRight(tr, p);
+        rotateLeft(tr, p);
     } else {
         s->left->col = 'b';
         rotateRight(tr, p);
     }
 }
 
-void replace(treeNode *tr, treeNode *x) {
+void replace(treeNode *&tr, treeNode *x) {
     treeNode *p = x->parent;
     if (x->left) {
         treeNode *ch = x->left;
@@ -306,7 +306,7 @@ treeNode *max(treeNode *tr) {
     }
 }
 
-void deleteNode(treeNode *tr, treeNode *x) {
+void deleteNode(treeNode *&tr, treeNode *x) {
     treeNode *buf = nullptr;
     if (x->right && x->left) {
         if (x->inf <= tr->inf)

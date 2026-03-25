@@ -33,11 +33,17 @@ int main() {
         tree::insertNode(tr, x);
     }
 
+    testCout(tr);
+    refresh();
+    endwin();
+
     tree::treeNode *elem = tree::find(tr, 9);
-    tree::deleteNode(tr, elem);
+    if (elem)
+        tree::deleteNode(tr, elem);
+    else
+        std::cout << "Dummy user\n";
 
     testCout(tr);
 
-    endwin(); // Завершение работы с ncurses
     return 0;
 }
