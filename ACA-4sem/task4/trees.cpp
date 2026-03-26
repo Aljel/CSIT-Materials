@@ -167,12 +167,12 @@ void insertNodePrep(treeNode *&tr, treeNode *prev, int x) {
     if (x < prev->inf && !prev->left) {
         prev->left = createNode(prev, x);
         insertNode1(tr, prev->left);
-    } else if (x > prev->inf && !prev->right) {
+    } else if (x >= prev->inf && !prev->right) {
         prev->right = createNode(prev, x);
         insertNode1(tr, prev->right);
     } else if (x < prev->inf && prev->left) {
         insertNodePrep(tr, prev->left, x);
-    } else if (x > prev->inf && prev->right) {
+    } else if (x >= prev->inf && prev->right) {
         insertNodePrep(tr, prev->right, x);
     }
 }
@@ -198,6 +198,7 @@ void deleteNode1(treeNode *&tr, treeNode *x) {
         deleteNode2(tr, x);
 }
 
+// родитель черный, сыновья брата черные, брат красный
 void deleteNode2(treeNode *&tr, treeNode *x) {
     treeNode *s = sibling(x);
     treeNode *p = x->parent;
@@ -212,6 +213,7 @@ void deleteNode2(treeNode *&tr, treeNode *x) {
     deleteNode3(tr, x);
 }
 
+// если узел, брат, родитель и дети брата черные
 void deleteNode3(treeNode *&tr, treeNode *x) {
     treeNode *s = sibling(x);
     treeNode *p = x->parent;
@@ -223,6 +225,7 @@ void deleteNode3(treeNode *&tr, treeNode *x) {
         deleteNode4(tr, x);
 }
 
+// родитель красный, дети брата черные
 void deleteNode4(treeNode *&tr, treeNode *x) {
     treeNode *s = sibling(x);
     treeNode *p = x->parent;
@@ -234,6 +237,7 @@ void deleteNode4(treeNode *&tr, treeNode *x) {
         deleteNode5(tr, x);
 }
 
+// если брат черный, дети его разноцветные, прилежащий племянник красный
 void deleteNode5(treeNode *&tr, treeNode *x) {
     treeNode *s = sibling(x);
     treeNode *p = x->parent;
@@ -253,6 +257,7 @@ void deleteNode5(treeNode *&tr, treeNode *x) {
     deleteNode6(tr, x);
 }
 
+// брат черный, противоположные племянник красный
 void deleteNode6(treeNode *&tr, treeNode *x) {
     treeNode *s = sibling(x);
     treeNode *p = x->parent;
@@ -460,6 +465,7 @@ void printTree(treeNode *root) {
 
     refresh(); // Обновляем экран, чтобы показать нарисованное
     getch();   // Ждем нажатия любой клавиши, чтобы окно не закрылось сразу
+    erase();   // Обнрвояем видеобуфер, чтобы следующий вывод был нормальным
     endwin();  // Корректно завершаем работу ncurses
 }
 

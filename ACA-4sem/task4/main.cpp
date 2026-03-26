@@ -13,7 +13,7 @@ void testCout(tree::treeNode *tr) {
     tree::postorder(tr);
     std::cout << "\n";
 
-    std::cout << "\nPress Enter to view the tree in ncurses...";
+    std::cout << "\nPress Enter to view the tree...";
     std::cin.ignore(10000, '\n');
     std::cin.get();
 
@@ -34,12 +34,18 @@ int main() {
     }
 
     testCout(tr);
-    refresh();
-    endwin();
 
-    tree::treeNode *elem = tree::find(tr, 9);
+    tree::treeNode *elem = tree::find(tr, 0);
     if (elem)
         tree::deleteNode(tr, elem);
+    else
+        std::cout << "Dummy user\n";
+
+    testCout(tr);
+
+    tree::treeNode *elem2 = tree::find(tr, 1);
+    if (elem)
+        tree::deleteNode(tr, elem2);
     else
         std::cout << "Dummy user\n";
 
