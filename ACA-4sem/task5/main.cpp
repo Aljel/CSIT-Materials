@@ -35,9 +35,13 @@ int main() {
         tree::insertNode(tr, x);
     }
 
+    int del;
+    std::cout << "Enter one node to delete\n";
+    std::cin >> del;
+
     testCout(tr);
 
-    tree::treeNode *elem = tree::find(tr, 17);
+    tree::treeNode *elem = tree::find(tr, del);
     if (elem) {
         tree::deleteNode(tr, elem);
     } else {
