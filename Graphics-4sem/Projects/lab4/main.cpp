@@ -9,8 +9,7 @@
 
 int main() {
     SetConfigFlags(FLAG_WINDOW_RESIZABLE);
-    InitWindow(800, 400, "Lab4");
-    SetWindowMinSize(170, 70);
+    InitWindow(1600, 800, "Lab4");
     SetTargetFPS(60);
     SetExitKey(KEY_NULL);
 

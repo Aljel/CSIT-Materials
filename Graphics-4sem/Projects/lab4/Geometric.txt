@@ -151,7 +151,7 @@ path 23
 
 # УЛИТКА
 # Большая справа
-pushTransform
+pushTransform # сохраняем начальное состояние для дальнейших фигур сверху, фигур на карусели и зайца
 pushTransform 
 pushTransform
 scale 2 
@@ -165,7 +165,7 @@ translate 1 9
 figure
 translate 12 0
 figure
-
+    
 # Карусель 
 popTransform # возвращаемся в девственное пространство
 rotate 90
