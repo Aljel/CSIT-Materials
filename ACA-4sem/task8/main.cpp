@@ -1,8 +1,19 @@
 #include <algorithm>
+#include <cstddef>
 #include <iostream>
 #include <map>
 #include <string>
 #include <vector>
+
+std::map<char, size_t> Badsyms(std::string &searchStr) {
+    std::map<char, size_t> badsym;
+    size_t m = searchStr.size();
+
+    for (size_t i = 0; i < m; ++i) {
+        badsym[searchStr[i]] = i;
+    }
+    return badsym;
+}
 
 // z-функция
 std::vector<size_t> zFunc(std::string &str) {
@@ -33,18 +44,8 @@ std::vector<size_t> zFunc(std::string &str) {
     return arr;
 }
 
-std::map<char, int> computeBadchar(std::string &pattern) {
-    std::map<char, int> badchar;
-    size_t m = pattern.size();
-
-    for (size_t i = 0; i < m; ++i) {
-        badchar[pattern[i]] = i;
-    }
-    return badchar;
-}
-
-std::vector<size_t> computeSuffshift(std::string &s) {
-    size_t m = s.length();
+std::vector<size_t> Suffshift(std::string &s) {
+    size_t m = s.size();
     std::vector<size_t> suffshift(m + 1, m);
 
     std::string reverse_s = s;
@@ -85,18 +86,18 @@ std::vector<size_t> computeSuffshift(std::string &s) {
     return suffshift;
 }
 
-void boyerMoure(std::string &input_string, std::string &substring) {
-    int n = input_string.size();
-    int m = substring.size();
+void boyerMoure(std::string &text, std::string &searchStr) {
+    int n = text.size();
+    int m = searchStr.size();
 
-    std::vector<size_t> suffshift = computeSuffshift(substring);
-    std::map<char, int> badchar = computeBadchar(substring);
+    std::vector<size_t> suffshift = Suffshift(searchStr);
+    std::map<char, size_t> badsym = Badsyms(searchStr);
 
     int i = 0;
     while (i <= n - m) {
         int j = m - 1;
 
-        while (j >= 0 && substring[j] == input_string[i + j]) {
+        while (j >= 0 && searchStr[j] == text[i + j]) {
             --j;
         }
 
@@ -104,10 +105,11 @@ void boyerMoure(std::string &input_string, std::string &substring) {
             std::cout << i << "\n";
             i += suffshift[0];
         } else {
-            char mismatched_char = input_string[i + j];
+            char mismatched_char = text[i + j];
             int bad_char_shift;
-            if (badchar.count(mismatched_char)) {
-                bad_char_shift = std::max(1, j - badchar[mismatched_char]);
+            if (badsym.count(mismatched_char)) {
+                bad_char_shift =
+                    std::max((size_t)1, j - badsym[mismatched_char]);
             } else {
                 bad_char_shift = j + 1;
             }
