@@ -5,6 +5,13 @@
 #include <string>
 #include <vector>
 
+void printVector(std::vector<size_t> &array) {
+    for (size_t i = 0; i < array.size() - 1; i++) {
+        std::cout << array[i] << ", ";
+    }
+    std::cout << array[array.size() - 1] << "\n";
+}
+
 std::map<char, size_t> Badsyms(std::string &searchStr) {
     std::map<char, size_t> badsym;
     size_t m = searchStr.size();
