@@ -152,6 +152,7 @@ path 23
 # УЛИТКА
 # Большая справа
 pushTransform # сохраняем начальное состояние для дальнейших фигур сверху, фигур на карусели и зайца
+scale 0.5
 pushTransform 
 pushTransform
 scale 2 
@@ -285,6 +286,7 @@ path 4
 2. 2.5 
 
 # ЗАЯЦ
+scale 0.5
 pushTransform
 pushTransform
 scale 2
