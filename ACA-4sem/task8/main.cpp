@@ -53,7 +53,7 @@ std::vector<size_t> zFunc(std::string &str) {
 
 std::vector<size_t> Suffshift(std::string &s) {
     size_t m = s.size();
-    std::vector<size_t> suffshift(m + 1, m);
+    std::vector<size_t> suffshift(m, m);
 
     std::string reverse_s = s;
     reverse(reverse_s.begin(), reverse_s.end());
@@ -83,12 +83,6 @@ std::vector<size_t> Suffshift(std::string &s) {
         }
     }
 
-    while (j < m) {
-        if (suffshift[j] == m) {
-            suffshift[j] = m;
-        }
-        j++;
-    }
     suffshift[m - 1] = 1;
     return suffshift;
 }
