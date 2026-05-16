@@ -107,7 +107,7 @@ std::vector<ssu::Model> readFromFile(const char *fileName, Screen &screen) {
             float nx, ny, nz;             // Координаты вектора поворота
             s >> theta >> nx >> ny >> nz; // Считываем параметр
             // Добавляем поворот к общему преобразованию
-            M = rotate(theta / 180.f * PI, Vec3(nx, ny, nz)) * M;
+            M = rotate(-theta / 180.f * PI, Vec3(nx, ny, nz)) * M;
         } else if (cmd == "pushTransform") {
             transforms.push_back(M); // сохраняем матрицу в стек
         } else if (cmd == "popTransform") {

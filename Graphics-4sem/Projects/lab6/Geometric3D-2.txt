@@ -1,0 +1,117 @@
+camera 10 5 5 10 5 0 0 1 0
+screen 90 2 5 20
+
+color 0 0 0
+thickness 2
+
+model 0.5 0.433 0.4082 1 0.866 0.8165
+path 5
+0 0 0
+0.5 0.2887 0.8165
+1 0 0
+0.5 0.866 0
+0.5 0.2887 0.8165
+path 3
+0.5 0.866 0
+0 0 0
+1 0 0
+
+rotate 90 1 1 0
+
+# УЛИТКА (уже нет)
+# Большая справа
+pushTransform # сохраняем начальное состояние для дальнейших фигур сверху, фигур на карусели и зайца
+scale 0.5
+pushTransform 
+pushTransform
+scale 2 
+translate 18 2 2
+figure
+
+# улитки сверху
+popTransform
+rotate 90 0 0 1
+translate 1 9 0
+figure
+translate 12 0 3
+figure
+    
+# Карусель 
+popTransform 
+rotate 90 0 0 1
+translate 7 0 0
+pushTransform # крутим фигуру на месте и перемещаем на радиус. Далее будем вращать 3 фигуры на нужный угол
+pushTransform
+
+rotate 30 0 0 1
+translate 10 10 6
+figure
+popTransform
+
+rotate 90 0 0 1
+translate 10 10 5
+figure
+popTransform
+
+rotate 150 0 0 1
+translate 10 10 4
+figure
+popTransform
+
+color 0 0 0
+thickness 2
+model 0.5 0.5 0.5 1 1 1 
+path 10
+0 1 0
+1 1 0
+1 1 1
+0 1 1
+0 1 0
+0 0 0
+1 0 0
+1 0 1
+0 0 1
+0 1 1
+path 2
+0 0 0
+0 0 1
+path 2
+1 1 0
+1 0 0
+path 2
+1 1 1
+1 0 1
+
+# ЗАЯЦ
+scale 0.5
+pushTransform
+pushTransform
+scale 2
+translate 2 2 2
+figure 
+
+popTransform
+rotate 90 0 0 1
+translate 7 9 1
+figure
+translate 12 0 6
+figure
+
+# Карусель 
+popTransform 
+rotate 90 0 0 1
+translate 7 0 0.5
+pushTransform # крутим фигуру на месте и перемещаем на радиус. Далее будем вращать 2 фигуры на нужный угол
+pushTransform
+
+rotate 60 0 0 1
+translate 10 10 1
+figure
+popTransform
+
+rotate 120 0 0 1
+translate 10 10 12
+figure
+popTransform
+
+

@@ -20,7 +20,6 @@ struct Model {
         std::vector<Path> paths;
         Mat4 modelM;
 
-        Model() = default;
         Model(std::vector<Path> paths, Mat4 mat)
             : paths(paths),
               modelM(mat) {}
