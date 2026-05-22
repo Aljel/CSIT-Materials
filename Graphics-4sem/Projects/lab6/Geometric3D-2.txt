@@ -38,21 +38,32 @@ figure
     
 # Карусель 
 popTransform 
-rotate 90 0 0 1
-translate 7 0 0
+
 pushTransform # крутим фигуру на месте и перемещаем на радиус. Далее будем вращать 3 фигуры на нужный угол
 pushTransform
 
+rotate 90 1 1 0
+rotate 30 1 1 0
+rotate 90 0 0 1
+translate 7 0 0
 rotate 30 0 0 1
 translate 10 10 6
 figure
 popTransform
 
+rotate 90 1 1 0
+rotate 90 1 1 0
+rotate 90 0 0 1
+translate 7 0 0
 rotate 90 0 0 1
 translate 10 10 5
 figure
 popTransform
 
+rotate 90 1 1 0
+rotate 150 1 1 0
+rotate 90 0 0 1
+translate 7 0 0
 rotate 150 0 0 1
 translate 10 10 4
 figure
@@ -99,16 +110,23 @@ figure
 
 # Карусель 
 popTransform 
-rotate 90 0 0 1
-translate 7 0 0.5
+
 pushTransform # крутим фигуру на месте и перемещаем на радиус. Далее будем вращать 2 фигуры на нужный угол
 pushTransform
 
+rotate 90 1 1 0 
+rotate 60 1 1 0
+rotate 90 0 0 1
+translate 7 0 0.5
 rotate 60 0 0 1
 translate 10 10 1
 figure
 popTransform
 
+rotate 90 1 1 0
+rotate 120 1 1 0
+rotate 90 0 0 1
+translate 7 0 0.5
 rotate 120 0 0 1
 translate 10 10 12
 figure
